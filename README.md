@@ -86,7 +86,7 @@ Create a `.env` file in the project root with the following content:
 
 ```bash
 SECRET_KEY=yoursecretkey
-MYSQL_HOST=localhost
+MYSQL_HOST=db
 MYSQL_USER=root
 MYSQL_PASSWORD=mysqlpasswd
 MYSQL_DB=edudb

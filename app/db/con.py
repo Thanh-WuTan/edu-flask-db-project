@@ -3,7 +3,7 @@ from ..config import Config
 
 def get_db_connection():
     return mysql.connector.connect(
-        host='db',
+        host=Config.MYSQL_HOST,
         user=Config.MYSQL_USER,
         password=Config.MYSQL_PASSWORD,
         database=Config.MYSQL_DB,
