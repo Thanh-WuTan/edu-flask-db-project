@@ -18,7 +18,7 @@ class User:
     def get_id(self):
         return str(self.id)
 
-def create_user(email, username, password, role_name, phone=None, department_id=1):
+def create_user(email, username, password, role_name, phone=None, department_id=5):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT id FROM roles WHERE role_name = %s", (role_name,))
@@ -32,6 +32,19 @@ def create_user(email, username, password, role_name, phone=None, department_id=
     cursor.close()
     conn.close()
     return user_id
+
+def update_user(user_id, username, email, role_name, phone, department_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM roles WHERE role_name = %s", (role_name,))
+    role_id = cursor.fetchone()[0]
+    cursor.execute(
+        "UPDATE users SET username = %s, email = %s, role = %s, phone = %s, department_id = %s WHERE id = %s",
+        (username, email, role_id, phone, department_id, user_id)
+    )
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 def get_user_by_email(email):
     conn = get_db_connection()
