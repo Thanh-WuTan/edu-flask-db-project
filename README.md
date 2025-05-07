@@ -74,6 +74,29 @@ Backend: Flask (Python) for REST API, handling CRUD operations and authenticatio
 
 
 ## Setup Instructions
+1. Clone the Repository:
 
-tbd
+```bash
+git clone https://github.com/Thanh-WuTan/edu-flask-db-project.git
+cd edu-flask-db-project
+```
 
+2. Set Up Environment Variables:
+Create a `.env` file in the project root with the following content:
+
+```bash
+SECRET_KEY=yoursecretkey
+MYSQL_HOST=localhost
+MYSQL_USER=root
+MYSQL_PASSWORD=mysqlpasswd
+MYSQL_DB=edudb
+```
+
+3. Build and Run the Containers:
+```bash
+docker-compose up -d
+```
+
+4. Access the Application:
+- Once the containers are running, the web application is accessible at http://localhost:5000.
+- The MySQL database is available at localhost:3308 (use the credentials from .env).
