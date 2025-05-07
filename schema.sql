@@ -37,11 +37,13 @@ CREATE TABLE users (
 CREATE TABLE courses (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     course_name VARCHAR(100) NOT NULL,
+    department_id INTEGER NOT NULL,
     instructor_id INTEGER NOT NULL,
     location VARCHAR(100),
     schedule VARCHAR(100),
     semester VARCHAR(20),
-    FOREIGN KEY (instructor_id) REFERENCES users(id) ON DELETE RESTRICT
+    FOREIGN KEY (instructor_id) REFERENCES users(id) ON DELETE RESTRICT,
+    FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE RESTRICT
 );
 
 -- Create enrollments table
@@ -64,4 +66,4 @@ CREATE INDEX idx_enrollments_student_course ON enrollments(student_id, course_id
 INSERT INTO roles (role_name)  VALUES ('admin'), ('instructor'), ('student'), ('guest');
 
 -- Insert sample departments
-INSERT INTO departments (department_name) VALUES ('CECS'), ('CAS'), ('CBM'), ('CHS');
+INSERT INTO departments (department_name) VALUES ('CECS'), ('CAS'), ('CBM'), ('CHS'), ('guest');
