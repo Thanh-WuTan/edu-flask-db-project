@@ -12,7 +12,7 @@ def register_user(email, username, password, confirm_password):
     user_id = create_user(email, username, hashed_password, 'guest')
     return user_id, None
 
-def login_user(email, password):
+def authenticate_user(email, password):
     user = get_user_by_email(email)
     if user and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
         return user, None
