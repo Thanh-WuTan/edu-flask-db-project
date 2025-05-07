@@ -33,7 +33,7 @@
                 <td>{{ user.email }}</td>
                 <td>{{ user.role_name }}</td>
                 <td>{{ user.phone or '-' }}</td>
-                <td>{{ user.department_id }}</>department_id }}</td>
+                <td>{{ user.department_id }}</td>
                 <td>
                     <button type="button" class="btn btn-sm" style="background-color: #2C3E50; color: #ECF0F1;" data-bs-toggle="modal" data-bs-target="#editUserModal{{ user.id }}">Edit</button>
                     <form method="POST" style="display:inline;">
@@ -51,11 +51,38 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <p>User edit form will be implemented here.</p>
+                            <form method="POST" action="{{ url_for('admin.edit_user', user_id=user.id) }}">
+                                {{ update_form.hidden_tag() }}
+                                <div class="mb-3">
+                                    <label for="username{{ user.id }}" class="form-label">Username</label>
+                                    <input type="text" class="form-control" id="username{{ user.id }}" name="username" value="{{ user.username }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email{{ user.id }}" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email{{ user.id }}" name="email" value="{{ user.email }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="role{{ user.id }}" class="form-label">Role</label>
+                                    <select class="form-select" id="role{{ user.id }}" name="role" required>
+                                        <option value="admin" {% if user.role_name == 'admin' %}selected{% endif %}>admin</option>
+                                        <option value="student" {% if user.role_name == 'student' %}selected{% endif %}>student</option>
+                                        <option value="instructor" {% if user.role_name == 'instructor' %}selected{% endif %}>instructor</option>
+                                        <option value="guest" {% if user.role_name == 'guest' %}selected{% endif %}>guest</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone{{ user.id }}" class="form-label">Phone</label>
+                                    <input type="text" class="form-control" id="phone{{ user.id }}" name="phone" value="{{ user.phone or '' }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="department_id{{ user.id }}" class="form-label">Department ID</label>
+                                    {{ update_form.department_id(class="form-select", id="department_id"+user.id|string) }}
+                                </div>
+                                <button type="submit" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Save</button>
+                            </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Save</button>
                         </div>
                     </div>
                 </div>
@@ -73,11 +100,42 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>User creation form will be implemented here.</p>
+                    <form method="POST" action="{{ url_for('admin.add_user') }}">
+                        {{ create_form.hidden_tag() }}
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="admin">admin</option>
+                                <option value="student">student</option>
+                                <option value="instructor">instructor</option>
+                                <option value="guest">guest</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="text" class="form-control" id="phone" name="phone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="department_id" class="form-label">Department ID</label>
+                            {{ create_form.department_id(class="form-select", id="department_id") }}
+                        </div>
+                        <button type="submit" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Save</button>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Save</button>
                 </div>
             </div>
         </div>

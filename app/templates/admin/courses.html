@@ -18,6 +18,7 @@
             <tr>
                 <th>ID</th>
                 <th>Course Name</th>
+                <th>Department ID</th>
                 <th>Instructor ID</th>
                 <th>Location</th>
                 <th>Schedule</th>
@@ -30,10 +31,11 @@
             <tr>
                 <td>{{ course.id }}</td>
                 <td>{{ course.course_name }}</td>
+                <td>{{ course.department_id }}</td>
                 <td>{{ course.instructor_id }}</td>
-                <td>{{ course.location }}</td>
-                <td>{{ course.schedule }}</td>
-                <td>{{ course.semester }}</td>
+                <td>{{ course.location or '-' }}</td>
+                <td>{{ course.schedule or '-' }}</td>
+                <td>{{ course.semester or '-' }}</td>
                 <td>
                     <button type="button" class="btn btn-sm" style="background-color: #2C3E50; color: #ECF0F1;" data-bs-toggle="modal" data-bs-target="#editCourseModal{{ course.id }}">Edit</button>
                     <form method="POST" style="display:inline;">
@@ -51,11 +53,37 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <p>Course edit form will be implemented here.</p>
+                            <form method="POST" action="{{ url_for('admin.edit_course', course_id=course.id) }}">
+                                {{ course_form.hidden_tag() }}
+                                <div class="mb-3">
+                                    <label for="course_name{{ course.id }}" class="form-label">Course Name</label>
+                                    <input type="text" class="form-control" id="course_name{{ course.id }}" name="course_name" value="{{ course.course_name }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="department_id{{ course.id }}" class="form-label">Department</label>
+                                    {{ course_form.department_id(class="form-select", id="department_id"+course.id|string) }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="instructor_id{{ course.id }}" class="form-label">Instructor</label>
+                                    {{ course_form.instructor_id(class="form-select", id="instructor_id"+course.id|string) }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="location{{ course.id }}" class="form-label">Location</label>
+                                    <input type="text" class="form-control" id="location{{ course.id }}" name="location" value="{{ course.location or '' }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="schedule{{ course.id }}" class="form-label">Schedule</label>
+                                    <input type="text" class="form-control" id="schedule{{ course.id }}" name="schedule" value="{{ course.schedule or '' }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="semester{{ course.id }}" class="form-label">Semester</label>
+                                    <input type="text" class="form-control" id="semester{{ course.id }}" name="semester" value="{{ course.semester or '' }}">
+                                </div>
+                                <button type="submit" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Save</button>
+                            </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Save</button>
                         </div>
                     </div>
                 </div>
@@ -73,11 +101,37 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Course creation form will be implemented here.</p>
+                    <form method="POST" action="{{ url_for('admin.add_course') }}">
+                        {{ course_form.hidden_tag() }}
+                        <div class="mb-3">
+                            <label for="course_name" class="form-label">Course Name</label>
+                            <input type="text" class="form-control" id="course_name" name="course_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="department_id" class="form-label">Department</label>
+                            {{ course_form.department_id(class="form-select", id="department_id") }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="instructor_id" class="form-label">Instructor</label>
+                            {{ course_form.instructor_id(class="form-select", id="instructor_id") }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="location" name="location">
+                        </div>
+                        <div class="mb-3">
+                            <label for="schedule" class="form-label">Schedule</label>
+                            <input type="text" class="form-control" id="schedule" name="schedule">
+                        </div>
+                        <div class="mb-3">
+                            <label for="semester" class="form-label">Semester</label>
+                            <input type="text" class="form-control" id="semester" name="semester">
+                        </div>
+                        <button type="submit" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Save</button>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Save</button>
                 </div>
             </div>
         </div>
