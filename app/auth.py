@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required
-from app.service.auth_service import register_user, login_user 
+from app.service.auth_service import register_user, authenticate_user
 from app.db.users import User
 
 auth = Blueprint('auth', __name__)
@@ -10,7 +10,7 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        user, error = login_user(email, password)
+        user, error = authenticate_user(email, password)
         if user:
             login_user(User(user))
             flash('Logged in successfully!', 'success')
