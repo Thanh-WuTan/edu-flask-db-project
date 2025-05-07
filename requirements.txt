@@ -1,4 +1,6 @@
 Flask
+flask_wtf
 mysql-connector-python 
 bcrypt
 Flask-Login
+email_validator

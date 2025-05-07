@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, current_user, login_required
 from app.service.auth_service import authenticate_user
-from app.service.admin_service import get_all_courses_logic, delete_course_logic, get_all_users_logic, delete_user_logic
-from app.db.users import User
+from app.service.admin_service import get_all_courses_service, delete_course_service, get_all_users_service, delete_user_service, add_user_service, edit_user_service, add_course_service, edit_course_service
+from app.db.users import User, get_all_users
+from app.forms import CreateUserForm, UpdateUserForm, CourseForm
 
 admin = Blueprint('admin', __name__)
 
@@ -33,6 +34,7 @@ def dashboard():
         return redirect(url_for('main.index'))
     return render_template('admin/dashboard.html', title='Admin Dashboard')
 
+
 @admin.route('/dashboard/courses/', methods=['GET', 'POST'])
 @login_required
 def courses():
@@ -43,13 +45,77 @@ def courses():
         course_id = request.form.get('course_id')
         if course_id:
             try:
-                delete_course_logic(course_id)
+                delete_course_service(course_id)
                 flash('Course deleted successfully!', 'success')
             except Exception as e:
                 flash(f'Error deleting course: {str(e)}', 'danger')
             return redirect(url_for('admin.courses'))
-    courses = get_all_courses_logic()
-    return render_template('admin/courses.html', title='Courses Dashboard', courses=courses)
+    courses = get_all_courses_service()
+    # Populate instructor choices dynamically
+    users = get_all_users()
+    instructors = [(user['id'], user['username']) for user in users if user['role_name'] == 'instructor']
+    course_form = CourseForm()
+    course_form.instructor_id.choices = instructors 
+    return render_template('admin/courses.html', title='Courses Dashboard', courses=courses, course_form=course_form)
+
+@admin.route('/dashboard/courses/add', methods=['POST'])
+@login_required
+def add_course():
+    if current_user.role != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('admin.courses'))
+    users = get_all_users()
+    instructors = [(user['id'], user['username']) for user in users if user['role_name'] == 'instructor']
+    form = CourseForm()
+    form.instructor_id.choices = instructors
+    if form.validate_on_submit():
+        course_name = form.course_name.data
+        department_id = form.department_id.data
+        instructor_id = form.instructor_id.data
+        location = form.location.data
+        schedule = form.schedule.data
+        semester = form.semester.data
+        try:
+            add_course_service(course_name, department_id, instructor_id, location, schedule, semester)
+            flash('Course added successfully', 'success')
+            return redirect(url_for('admin.courses'))
+        except Exception as e:
+            flash(f'Error adding course: {str(e)}', 'danger')
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'Error in {field}: {error}', 'danger')
+    return redirect(url_for('admin.courses'))
+
+@admin.route('/dashboard/courses/edit/<int:course_id>', methods=['POST'])
+@login_required
+def edit_course(course_id):
+    if current_user.role != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('admin.courses'))
+    users = get_all_users()
+    instructors = [(user['id'], user['username']) for user in users if user['role_name'] == 'instructor']
+    form = CourseForm()
+    form.instructor_id.choices = instructors
+    if form.validate_on_submit():
+        course_name = form.course_name.data
+        department_id = form.department_id.data
+        instructor_id = form.instructor_id.data
+        location = form.location.data
+        schedule = form.schedule.data
+        semester = form.semester.data
+        try:
+            edit_course_service(course_id, course_name, department_id, instructor_id, location, schedule, semester)
+            flash('Course updated successfully', 'success')
+            return redirect(url_for('admin.courses'))
+        except Exception as e:
+            flash(f'Error updating course: {str(e)}', 'danger')
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'Error in {field}: {error}', 'danger')
+    return redirect(url_for('admin.courses'))
+
 
 @admin.route('/dashboard/users/', methods=['GET', 'POST'])
 @login_required
@@ -61,10 +127,63 @@ def users():
         user_id = request.form.get('user_id')
         if user_id:
             try:
-                delete_user_logic(user_id)
+                delete_user_service(user_id)
                 flash('User deleted successfully!', 'success')
             except Exception as e:
                 flash(f'Error deleting user: {str(e)}', 'danger')
             return redirect(url_for('admin.users'))
-    users = get_all_users_logic()
-    return render_template('admin/users.html', title='Users Dashboard', users=users)
+    users = get_all_users_service() 
+    create_form = CreateUserForm()
+    update_form = UpdateUserForm()
+    return render_template('admin/users.html', title='Users Dashboard', users=users, create_form=create_form, update_form=update_form)
+
+@admin.route('/dashboard/users/add', methods=['POST'])
+@login_required
+def add_user():
+    if current_user.role != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('admin.users'))
+    form = CreateUserForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        email = form.email.data
+        password = form.password.data
+        role = form.role.data
+        phone = form.phone.data
+        department_id = form.department_id.data
+        try:
+            add_user_service(email, username, password, role, phone, department_id)
+            flash('User added successfully', 'success')
+            return redirect(url_for('admin.users'))
+        except Exception as e:
+            flash(f'Error adding user: {str(e)}', 'danger')
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'Error in {field}: {error}', 'danger')
+    return redirect(url_for('admin.users'))
+
+@admin.route('/dashboard/users/edit/<int:user_id>', methods=['POST'])
+@login_required
+def edit_user(user_id):
+    if current_user.role != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('admin.users'))
+    form = UpdateUserForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        email = form.email.data
+        role = form.role.data
+        phone = form.phone.data
+        department_id = form.department_id.data
+        try:
+            edit_user_service(user_id, username, email, role, phone, department_id)
+            flash('User updated successfully', 'success')
+            return redirect(url_for('admin.users'))
+        except Exception as e:
+            flash(f'Error updating user: {str(e)}', 'danger')
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'Error in {field}: {error}', 'danger')
+    return redirect(url_for('admin.users'))
