@@ -50,3 +50,20 @@ def get_user_by_id(user_id):
     cursor.close()
     conn.close()
     return user
+
+def get_all_users():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT u.*, r.role_name FROM users u JOIN roles r ON u.role = r.id")
+    users = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return users
+
+def delete_user(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()

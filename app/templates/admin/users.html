@@ -1,0 +1,86 @@
+{% extends 'admin/admin_panel.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 style="color: #2C3E50;">Users Dashboard</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <div class="mb-3">
+        <button type="button" class="btn" style="background-color: #27AE60; color: #ECF0F1;" data-bs-toggle="modal" data-bs-target="#addUserModal">Add User</button>
+    </div>
+    <table class="table table-striped">
+        <thead style="background-color: #34495E; color: #ECF0F1;">
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Phone</th>
+                <th>Department ID</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role_name }}</td>
+                <td>{{ user.phone or '-' }}</td>
+                <td>{{ user.department_id }}</>department_id }}</td>
+                <td>
+                    <button type="button" class="btn btn-sm" style="background-color: #2C3E50; color: #ECF0F1;" data-bs-toggle="modal" data-bs-target="#editUserModal{{ user.id }}">Edit</button>
+                    <form method="POST" style="display:inline;">
+                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                        <button type="submit" class="btn btn-sm" style="background-color: #C0392B; color: #ECF0F1;" onclick="return confirm('Are you sure you want to delete this user?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            <!-- Edit User Modal for each user -->
+            <div class="modal fade" id="editUserModal{{ user.id }}" tabindex="-1" aria-labelledby="editUserModalLabel{{ user.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content" style="background-color: #34495E; color: #ECF0F1;">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editUserModalLabel{{ user.id }}">Edit User: {{ user.username }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>User edit form will be implemented here.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Add User Modal -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="background-color: #34495E; color: #ECF0F1;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUserModalLabel">Add New User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>User creation form will be implemented here.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
