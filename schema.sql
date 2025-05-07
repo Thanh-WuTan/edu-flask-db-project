@@ -23,7 +23,7 @@ CREATE TABLE departments (
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(512) NOT NULL, -- Hashed password
+    password VARCHAR(255) NOT NULL, -- Hashed password
     role INTEGER NOT NULL,
     phone VARCHAR(20),
     email VARCHAR(255) NOT NULL UNIQUE,
