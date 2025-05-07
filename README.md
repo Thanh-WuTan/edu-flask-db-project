@@ -12,7 +12,7 @@ The Student Course Management System is a web-based application designed to stre
 
 
 **Instructor Role:**
-- Add or remove students from their teaching courses.
+- Add students to their teaching courses.
 - View the list of students enrolled in their courses.
 
 
