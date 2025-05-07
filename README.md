@@ -90,6 +90,7 @@ MYSQL_HOST=localhost
 MYSQL_USER=root
 MYSQL_PASSWORD=mysqlpasswd
 MYSQL_DB=edudb
+MYSQL_PORT=3306
 ```
 
 3. Build and Run the Containers:
