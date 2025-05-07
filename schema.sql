@@ -61,7 +61,7 @@ CREATE INDEX idx_courses_instructor ON courses(instructor_id);
 CREATE INDEX idx_enrollments_student_course ON enrollments(student_id, course_id);
 
 -- Insert initial roles
-INSERT INTO roles (role_name) VALUES ('admin'), ('instructor'), ('student');
+INSERT INTO roles (role_name)  VALUES ('admin'), ('instructor'), ('student'), ('guest');
 
 -- Insert sample departments
 INSERT INTO departments (department_name) VALUES ('CECS'), ('CAS'), ('CBM'), ('CHS');
