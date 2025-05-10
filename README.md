@@ -91,7 +91,14 @@ MYSQL_USER=root
 MYSQL_PASSWORD=mysqlpasswd
 MYSQL_DB=edudb
 MYSQL_PORT=3306
+DEFAULT_ADMIN_USERNAME=admin
+DEFAULT_ADMIN_EMAIL=admin@admin.admin
+DEFAULT_ADMIN_PASSWORD=admin
 ```
+
++ `MYSQL_*` keys are for the config of the MySQL container. 
++ `DEFAULT_ADMIN_*` are information for the default admin account. Please remove this account after create the app.
+
 
 3. Build and Run the Containers:
 ```bash
