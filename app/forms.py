@@ -42,3 +42,9 @@ class CourseForm(FlaskForm):
     location = StringField('Location', validators=[Optional()])
     schedule = StringField('Schedule', validators=[Optional()])
     semester = StringField('Semester', validators=[Optional()])
+
+class CourseInstructorForm(FlaskForm):
+    course_name = StringField('Course Name', validators=[DataRequired()])
+    location = StringField('Location', validators=[Optional()])
+    schedule = StringField('Schedule', validators=[Optional()])
+    semester = StringField('Semester', validators=[Optional()])

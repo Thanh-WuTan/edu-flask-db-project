@@ -1,0 +1,36 @@
+{% extends 'instructor/instructor_panel.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 style="color: #2C3E50;">Welcome instructor, {{ current_user.email }}!</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4 shadow" style="background-color: #FFFFFF; border: none;">
+                <div class="card-body">
+                    <h3 style="color: #2C3E50;">Manage Courses</h3>
+                    <p style="color: #BDC3C7;">View, create, edit, or delete courses that you are instructors.</p>
+                    <a href="{{ url_for('instructor.courses') }}" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Courses Dashboard</a>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="col-md-6">
+            <div class="card mb-4 shadow" style="background-color: #FFFFFF; border: none;">
+                <div class="card-body">
+                    <h3 style="color: #2C3E50;">Manage Users</h3>
+                    <p style="color: #BDC3C7;">View, create, edit, or delete users.</p>
+                    <a href="{{ url_for('admin.users') }}" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Users Dashboard</a>
+                </div>
+            </div>
+        </div> -->
+    </div>
+
+</div>
+{% endblock %}

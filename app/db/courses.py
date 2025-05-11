@@ -29,6 +29,24 @@ def get_all_courses():
         cursor.close()
         connection.close()
 
+def get_all_courses_by_instructor(instructor_id):
+    connection = get_db_connection()
+    if connection is None:
+        return []
+    try:
+        cursor = connection.cursor()
+        cursor.execute("SELECT id, course_name, department_id, instructor_id, location, schedule, semester FROM courses WHERE instructor_id = %s", (instructor_id,))
+        courses_data = cursor.fetchall()
+        courses = [Course(data) for data in courses_data]
+        return courses
+    except Error as e:
+        print(f"Error fetching courses: {e}")
+        return []
+    finally:
+        cursor.close()
+        connection.close()
+
+
 def create_course(course_name, department_id, instructor_id, location, schedule, semester):
     connection = get_db_connection()
     if connection is None:

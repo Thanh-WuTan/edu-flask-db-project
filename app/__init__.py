@@ -28,9 +28,11 @@ def create_app():
     from .routes import main
     from .auth import auth
     from .admin import admin
+    from .instructor import instructor  # Add this line
     app.register_blueprint(main)
     app.register_blueprint(auth)
     app.register_blueprint(admin, url_prefix='/admin')
+    app.register_blueprint(instructor, url_prefix='/instructor')  # Add this line
     
     
     # create a default admin user 

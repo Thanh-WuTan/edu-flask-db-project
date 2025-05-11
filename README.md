@@ -29,13 +29,11 @@ The Student Course Management System is a web-based application designed to stre
 **User Authentication:**
 - Secure login for all roles with role-based access control.
 
-
-
 ### Non-functional Requirements
 
 - **Performance:** Queries should execute within 0.05 seconds for a dataset of 1000 enrollments.
 - **Security:** Encrypt passwords, use role-based privileges, and prevent SQL injection.
-Scalability: Support at least 100 concurrent users via Docker containerization.
+- **Scalability**: Support at least 100 concurrent users via Docker containerization.
 - **Usability:** Provide a simple, responsive UI using Bootstrap.
 - **Reliability:** Ensure data integrity with normalized database design (3NF) and constraints.
 

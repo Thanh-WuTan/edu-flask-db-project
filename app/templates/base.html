@@ -25,6 +25,11 @@
                                 <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a>
                             </li>
                         {% endif %}
+                        {% if current_user.role == 'instructor' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('instructor.dashboard') }}">Instructor Dashboard</a>
+                            </li>
+                        {% endif %}
                     {% else %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
