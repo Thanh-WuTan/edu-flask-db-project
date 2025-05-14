@@ -1,5 +1,4 @@
-from app.db.users import get_all_users, delete_user, create_user, update_user
-from app.db.courses import get_all_courses_by_instructor, delete_course, create_course, update_course
+from app.db.courses import get_filtered_courses
 
 def get_all_courses_from_instructor_service(instructor_id: int):
-    return get_all_courses_by_instructor(instructor_id)
+    return get_filtered_courses(instructor_id=instructor_id)
