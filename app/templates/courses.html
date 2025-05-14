@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}Courses{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 style="color: #2C3E50;">Courses</h1>
+    <!-- Search and Filter Form -->
+    <form method="GET" action="{{ url_for('main.courses') }}" class="mb-4">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label for="search">Search by Course Name</label>
+                    <input type="text" class="form-control" id="search" name="search" value="{{ search_query }}" placeholder="Enter course name">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="department_id">Filter by Department</label>
+                    <select class="form-select" id="department_id" name="department_id">
+                        {% for dept_id, dept_name in departments %}
+                            <option value="{{ dept_id }}" {% if dept_id == department_id %}selected{% endif %}>{{ dept_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label for="schedule">Filter by Schedule</label>
+                    <select class="form-select" id="schedule" name="schedule">
+                        {% for sched_val, sched_name in schedules %}
+                            <option value="{{ sched_val }}" {% if sched_val == schedule %}selected{% endif %}>{{ sched_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Courses Table -->
+    <table class="table table-striped">
+        <thead style="background-color: #34495E; color: #ECF0F1;">
+            <tr>
+                <th>ID</th>
+                <th>Course Name</th>
+                <th>Department</th>
+                <th>Instructor ID</th>
+                <th>Location</th>
+                <th>Schedule</th>
+                <th>Semester</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.id }}</td>
+                <td>{{ course.course_name }}</td>
+                <td>{{ course.department_name }}</td>
+                <td>{{ course.instructor_id or '-' }}</td>
+                <td>{{ course.location or '-' }}</td>
+                <td>{{ course.schedule or '-' }}</td>
+                <td>{{ course.semester or '-' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="text-center">No courses found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('main.courses', page=page-1, search=search_query, department_id=department_id, schedule=schedule, instructor_id=instructor_id) if page > 1 else '#' }}">Previous</a>
+            </li>
+            {% for p in range(1, total_pages + 1) %}
+            <li class="page-item {% if p == page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('main.courses', page=p, search=search_query, department_id=department_id, schedule=schedule, instructor_id=instructor_id) }}">{{ p }}</a>
+            </li>
+            {% endfor %}
+            <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('main.courses', page=page+1, search=search_query, department_id=department_id, schedule=schedule, instructor_id=instructor_id) if page < total_pages else '#' }}">Next</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
