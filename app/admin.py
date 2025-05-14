@@ -50,13 +50,20 @@ def courses():
             except Exception as e:
                 flash(f'Error deleting course: {str(e)}', 'danger')
             return redirect(url_for('admin.courses'))
-    courses = get_all_courses_service()
+    
+    # Pagination parameters
+    page = int(request.args.get('page', 1))
+    per_page = 10
+    courses, total = get_all_courses_service(page=page, per_page=per_page)
+    total_pages = (total + per_page - 1) // per_page
+
     # Populate instructor choices dynamically
     users = get_all_users()
     instructors = [(user['id'], user['username']) for user in users if user['role_name'] == 'instructor']
     course_form = CourseForm()
     course_form.instructor_id.choices = instructors 
-    return render_template('admin/courses.html', title='Courses Dashboard', courses=courses, course_form=course_form)
+    return render_template('admin/courses.html', title='Courses Dashboard', courses=courses, 
+                          course_form=course_form, page=page, total_pages=total_pages)
 
 @admin.route('/dashboard/courses/add', methods=['POST'])
 @login_required

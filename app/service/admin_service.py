@@ -1,8 +1,12 @@
 import bcrypt
 from app.db.users import get_all_users, delete_user, create_user, update_user
-from app.db.courses import get_all_courses, delete_course, create_course, update_course
-def get_all_courses_service():
-    return get_all_courses()
+from app.db.courses import get_filtered_courses, delete_course, create_course, update_course
+
+
+def get_all_courses_service(page=1, per_page=10):
+    # Use get_filtered_courses with no filters to get paginated courses
+    courses, total = get_filtered_courses(page=page, per_page=per_page)
+    return courses, total
 
 def delete_course_service(course_id):
     delete_course(course_id)
