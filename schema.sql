@@ -67,3 +67,24 @@ INSERT INTO roles (role_name)  VALUES ('admin'), ('instructor'), ('student'), ('
 
 -- Insert sample departments
 INSERT INTO departments (department_name) VALUES ('CECS'), ('CAS'), ('CBM'), ('CHS'), ('guest');
+
+
+DELIMITER //
+CREATE PROCEDURE get_user_role_counts()
+BEGIN
+    SELECT r.role_name, COUNT(u.id) AS user_count
+    FROM users u
+    LEFT JOIN roles r ON u.role = r.id
+    GROUP BY r.role_name;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE get_course_department_counts()
+BEGIN
+    SELECT d.department_name, COUNT(c.id) AS course_count
+    FROM courses c
+    LEFT JOIN departments d ON c.department_id = d.id
+    GROUP BY d.department_name;
+END //
+DELIMITER ;

@@ -3,6 +3,7 @@ from flask_login import login_user, current_user, login_required
 from app.service.auth_service import authenticate_user
 from app.service.admin_service import get_all_courses_service, delete_course_service, get_all_users_service, delete_user_service, add_user_service, edit_user_service, add_course_service, edit_course_service
 from app.db.users import User, get_all_users
+from app.db.con import get_db_connection
 from app.forms import CreateUserForm, UpdateUserForm, CourseForm
 
 admin = Blueprint('admin', __name__)
@@ -32,7 +33,22 @@ def dashboard():
     if current_user.role != 'admin':
         flash('Unauthorized access.', 'danger')
         return redirect(url_for('main.index'))
-    return render_template('admin/dashboard.html', title='Admin Dashboard')
+    
+    # Fetch user role counts
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    cursor.callproc('get_user_role_counts')
+    user_role_counts = next(cursor.stored_results()).fetchall()
+    cursor.close()
+    
+    # Fetch course department counts
+    cursor = connection.cursor(dictionary=True)
+    cursor.callproc('get_course_department_counts')
+    course_dept_counts = next(cursor.stored_results()).fetchall()
+    cursor.close()
+    connection.close()
+
+    return render_template('admin/dashboard.html', title='Admin Dashboard', user_role_counts=user_role_counts, course_dept_counts=course_dept_counts)
 
 
 @admin.route('/dashboard/courses/', methods=['GET', 'POST'])
