@@ -16,13 +16,13 @@ CREATE TABLE roles (
 -- Create departments table
 CREATE TABLE departments (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    department_name VARCHAR(100) NOT NULL UNIQUE
+    department_name VARCHAR(255) NOT NULL UNIQUE
 );
 
 -- Create users table
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) NOT NULL UNIQUE,
+    username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL, -- Hashed password
     role INTEGER NOT NULL,
     phone VARCHAR(20),
@@ -36,13 +36,13 @@ CREATE TABLE users (
 -- Create courses table
 CREATE TABLE courses (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    course_name VARCHAR(100) NOT NULL,
+    course_name VARCHAR(255) NOT NULL,
     department_id INTEGER NOT NULL,
-    instructor_id INTEGER NOT NULL,
-    location VARCHAR(100),
-    schedule VARCHAR(100),
+    instructor_id INTEGER,
+    location VARCHAR(255),
+    schedule VARCHAR(255),
     semester VARCHAR(20),
-    FOREIGN KEY (instructor_id) REFERENCES users(id) ON DELETE RESTRICT,
+    FOREIGN KEY (instructor_id) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE RESTRICT
 );
 
