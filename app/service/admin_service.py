@@ -1,6 +1,6 @@
+import bcrypt
 from app.db.users import get_all_users, delete_user, create_user, update_user
 from app.db.courses import get_all_courses, delete_course, create_course, update_course
-
 def get_all_courses_service():
     return get_all_courses()
 
@@ -20,7 +20,8 @@ def delete_user_service(user_id):
     delete_user(user_id)
 
 def add_user_service(email, username, password, role_name, phone, department_id):
-    create_user(email, username, password, role_name, phone, department_id)
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    create_user(email, username, hashed_password, role_name, phone, department_id)
 
 def edit_user_service(user_id, username, email, role_name, phone, department_id):
     update_user(user_id, username, email, role_name, phone, department_id)
