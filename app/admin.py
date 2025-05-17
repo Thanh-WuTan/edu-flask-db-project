@@ -3,7 +3,7 @@ from flask_login import login_user, current_user, login_required
 from app.service.auth_service import authenticate_user
 from app.service.admin_service import get_all_courses_service, delete_course_service, get_all_users_service, delete_user_service, add_user_service, edit_user_service, add_course_service, edit_course_service
 from app.db.users import User, get_all_users
-from app.db.con import get_db_connection
+from app.db.connector import get_db_connection
 from app.forms import CreateUserForm, UpdateUserForm, CourseForm
 
 admin = Blueprint('admin', __name__)
