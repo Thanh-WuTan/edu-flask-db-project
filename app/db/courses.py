@@ -165,3 +165,35 @@ def db_get_course_by_student_id(student_id):
     finally:
         cursor.close()
         connection.close()
+
+def db_get_course_by_id(course_id):
+    connection = get_db_connection()
+    if connection is None:
+        return None
+    try:
+        cursor = connection.cursor(dictionary=True)
+        query = """
+            SELECT 
+                c.id,
+                c.course_name,
+                c.department_id,
+                d.department_name,
+                c.instructor_id,
+                u.username AS instructor_name,
+                c.location,
+                c.schedule,
+                c.semester
+            FROM courses c
+            JOIN departments d ON c.department_id = d.id
+            LEFT JOIN users u ON c.instructor_id = u.id
+            WHERE c.id = %s
+        """
+        cursor.execute(query, (course_id,))
+        course = cursor.fetchone()
+        return course
+    except Error as e:
+        print(f"Error fetching course by ID: {e}")
+        return None
+    finally:
+        cursor.close()
+        connection.close()

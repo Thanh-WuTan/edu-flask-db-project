@@ -1,0 +1,41 @@
+{% extends 'instructor/instructor_panel.html' %}
+{% block title %}Course Details{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow-lg rounded-4">
+        <div class="card-header bg-success text-white">
+            <h2 class="mb-0">Course Details</h2>
+        </div>
+        <div class="card-body">
+            <dl class="row fs-5">
+                <dt class="col-sm-4">Course ID</dt>
+                <dd class="col-sm-8">{{ course.id }}</dd>
+
+                <dt class="col-sm-4">Course Name</dt>
+                <dd class="col-sm-8">{{ course.course_name }}</dd>
+
+                <dt class="col-sm-4">Department</dt>
+                <dd class="col-sm-8">{{ course.department_name }}</dd>
+
+                <dt class="col-sm-4">Instructor</dt>
+                <dd class="col-sm-8">
+                    {% if course.instructor_id %}
+                        {{ course.instructor_name or 'ID: ' ~ course.instructor_id }}
+                    {% else %}
+                        Not Assigned
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-4">Location</dt>
+                <dd class="col-sm-8">{{ course.location }}</dd>
+
+                <dt class="col-sm-4">Schedule</dt>
+                <dd class="col-sm-8">{{ course.schedule }}</dd>
+
+                <dt class="col-sm-4">Semester</dt>
+                <dd class="col-sm-8">{{ course.semester }}</dd>
+            </dl>
+        </div>
+    </div>
+</div>
+{% endblock %}

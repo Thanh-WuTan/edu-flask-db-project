@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, current_user, login_required
 from app.service.auth_service import authenticate_user
 from app.service.instructor_service import get_all_courses_from_instructor_service, get_course_by_instructor_id
+from app.service.main_service import get_course_by_id
 from app.forms import CreateUserForm, UpdateUserForm, CourseForm, CourseInstructorForm
 
 from app.db.users import User
@@ -54,3 +55,12 @@ def courses():
     courses = get_course_by_instructor_id(instructor_id)
     print("Fetched courses:", courses)  # DEBUG LINE
     return render_template('instructor/courses.html', title='My Courses', courses=courses)
+
+@instructor.route('/dashboard/courses/<int:course_id>')
+@login_required
+def course_detail(course_id):
+    course = get_course_by_id(course_id)
+    if not course:
+        flash('Course not found.', 'danger')
+        return redirect(url_for('instructor.dashboard'))
+    return render_template('instructor/course_detail.html', course=course, title='Course Details')

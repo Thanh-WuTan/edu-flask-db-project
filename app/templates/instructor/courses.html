@@ -4,13 +4,12 @@
 <div class="container mt-4">
     <h2>My Courses</h2>
     {% if courses %}
-        <table class="table table-bordered table-striped mt-3">
+        <table class="table table-hover table-bordered table-striped mt-3">
             <thead class="table-dark">
                 <tr>
                     <th>Course ID</th>
                     <th>Course Name</th>
                     <th>Department ID</th>
-                    <th>Instructor ID</th>
                     <th>Location</th>
                     <th>Schedule</th>
                     <th>Semester</th>
@@ -18,13 +17,13 @@
             </thead>
             <tbody>
                 {% for course in courses %}
-                <tr>
-                    <td>{{ course[0] }}</td>  {# ID #}
-                    <td>{{ course[1] }}</td>  {# Course Name #}
-                    <td>{{ course[2] }}</td>  {# Department ID #}
-                    <td>{{ course[4] }}</td>  {# Location #}
-                    <td>{{ course[5] }}</td>  {# Schedule #}
-                    <td>{{ course[6] }}</td>  {# Semester #}
+                <tr onclick="window.location='{{ url_for('instructor.course_detail', course_id=course[0]) }}'" style="cursor: pointer;">
+                    <td>{{ course[0] }}</td>
+                    <td>{{ course[1] }}</td>
+                    <td>{{ course[2] }}</td>
+                    <td>{{ course[4] }}</td>
+                    <td>{{ course[5] }}</td>
+                    <td>{{ course[6] }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
