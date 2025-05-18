@@ -11,6 +11,8 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
+    if current_user.is_authenticated and current_user.role == 'admin':
+        return redirect(url_for('admin.dashboard'))
     if current_user.is_authenticated and current_user.role == 'instructor':
         return redirect(url_for('instructor.dashboard'))
     if current_user.is_authenticated and current_user.role == 'student':
