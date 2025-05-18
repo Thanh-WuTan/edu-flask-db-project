@@ -17,7 +17,7 @@ class Course:
         self.schedule = data[5]
         self.semester = data[6]
         self.department_name = dept_name.get(data[2], "Unknown")
-        self.capacity = data[7]
+        self.availability = data[7]
     
 def get_filtered_courses(search_query=None, department_id=None, schedule=None, instructor_id=None, page=1, per_page=10):
     connection = get_db_connection()
@@ -26,7 +26,7 @@ def get_filtered_courses(search_query=None, department_id=None, schedule=None, i
     try:
         cursor = connection.cursor()
         query = """
-            SELECT c.id, c.course_name, c.department_id, c.instructor_id, c.location, c.schedule, c.semester, c.capacity, d.department_name
+            SELECT c.id, c.course_name, c.department_id, c.instructor_id, c.location, c.schedule, c.semester, c.availability, d.department_name
             FROM courses c
             JOIN departments d ON c.department_id = d.id
             WHERE 1=1
@@ -79,15 +79,15 @@ def get_filtered_courses(search_query=None, department_id=None, schedule=None, i
         cursor.close()
         connection.close()
 
-def create_course(course_name, department_id, instructor_id, location, schedule, semester, capacity):
+def create_course(course_name, department_id, instructor_id, location, schedule, semester, availability):
     connection = get_db_connection()
     if connection is None:
         raise Exception("Failed to connect to database")
     try:
         cursor = connection.cursor()
         cursor.execute(
-            "INSERT INTO courses (course_name, department_id, instructor_id, location, schedule, semester, capacity) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-            (course_name, department_id, instructor_id, location, schedule, semester, capacity)
+            "INSERT INTO courses (course_name, department_id, instructor_id, location, schedule, semester, availability) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (course_name, department_id, instructor_id, location, schedule, semester, availability)
         )
         connection.commit()
     except Error as e:
@@ -97,15 +97,15 @@ def create_course(course_name, department_id, instructor_id, location, schedule,
         cursor.close()
         connection.close()
 
-def update_course(course_id, course_name, department_id, instructor_id, location, schedule, semester, capacity):
+def update_course(course_id, course_name, department_id, instructor_id, location, schedule, semester, availability):
     connection = get_db_connection()
     if connection is None:
         raise Exception("Failed to connect to database")
     try:
         cursor = connection.cursor()
         cursor.execute(
-            "UPDATE courses SET course_name = %s, department_id = %s, instructor_id = %s, location = %s, schedule = %s, semester = %s, capacity = %s WHERE id = %s",
-            (course_name, department_id, instructor_id, location, schedule, semester, capacity, course_id)
+            "UPDATE courses SET course_name = %s, department_id = %s, instructor_id = %s, location = %s, schedule = %s, semester = %s, availability = %s WHERE id = %s",
+            (course_name, department_id, instructor_id, location, schedule, semester, availability, course_id)
         )
         connection.commit()
     except Error as e:
@@ -156,7 +156,7 @@ def db_get_course_by_student_id(student_id):
             SELECT 
                 c.id, c.course_name, c.department_id, c.instructor_id,
                 c.location, c.schedule, c.semester, 
-                d.department_name, c.capacity
+                d.department_name, c.availability
             FROM enrollments e
             JOIN courses c ON e.course_id = c.id
             JOIN departments d ON c.department_id = d.id

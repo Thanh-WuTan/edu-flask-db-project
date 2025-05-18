@@ -42,7 +42,7 @@ CREATE TABLE courses (
     location VARCHAR(255),
     schedule VARCHAR(255),
     semester VARCHAR(20),
-    capacity INTEGER NOT NULL, -- new
+    availability INTEGER NOT NULL, -- new
     FOREIGN KEY (instructor_id) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE RESTRICT
 );

@@ -68,15 +68,15 @@ def create_instructor(username, email, password):
         cursor.close()
         connection.close()
 
-def create_course(course_name, department_id, instructor_id, location, schedule, semester, capacity):
+def create_course(course_name, department_id, instructor_id, location, schedule, semester, availability):
     connection = get_db_connection()
     if connection is None:
         return False
     try:
         cursor = connection.cursor()
         cursor.execute(
-            "INSERT INTO courses (course_name, department_id, instructor_id, location, schedule, semester, capacity) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-            (course_name, department_id, instructor_id, location, schedule, semester, capacity)
+            "INSERT INTO courses (course_name, department_id, instructor_id, location, schedule, semester, availability) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (course_name, department_id, instructor_id, location, schedule, semester, availability)
         )
         connection.commit()
         return True
@@ -110,9 +110,9 @@ def generate_test_data():
         location = random.choice(LOCATIONS)
         schedule = random.choice(SCHEDULES)
         semester = random.choice(SEMESTERS)
-        capacity = random.randint(20, 100)  # Random capacity between 20 and 100
-        success = create_course(course_name, department_id, instructor_id, location, schedule, semester, capacity)
-         # Assuming the create_course function has been modified to accept capacity
+        availability = random.randint(20, 100)  # Random availability between 20 and 100
+        success = create_course(course_name, department_id, instructor_id, location, schedule, semester, availability)
+         # Assuming the create_course function has been modified to accept availability
         if success:
             print(f"Created course: {course_name}, Instructor ID: {instructor_id}, Schedule: {schedule}")
         else:
