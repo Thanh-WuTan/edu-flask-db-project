@@ -152,6 +152,7 @@ if __name__ == "__main__":
     except ImportError:
         print("Please install required packages: pip install python-dotenv mysql-connector-python bcrypt")
         exit(1)
-    
+        
+    generate_test_data()
     generate_students()
     print("Test data generation completed.")

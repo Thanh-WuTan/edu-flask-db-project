@@ -3,6 +3,12 @@ from mysql.connector import Error
 
 class Course:
     def __init__(self, data):
+        dept_name = {
+            1: "CECS",
+            2: "CAS",
+            3: "CBM",
+            4: "CHS",
+        }
         self.id = data[0]
         self.course_name = data[1]
         self.department_id = data[2]
@@ -10,8 +16,8 @@ class Course:
         self.location = data[4]
         self.schedule = data[5]
         self.semester = data[6]
+        self.department_name = dept_name.get(data[2], "Unknown")
         self.capacity = data[7]
-        self.department_name = data[8]
     
 def get_filtered_courses(search_query=None, department_id=None, schedule=None, instructor_id=None, page=1, per_page=10):
     connection = get_db_connection()
@@ -132,7 +138,7 @@ def db_get_course_by_instructor_id(instructor_id):
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM courses WHERE instructor_id = %s", (instructor_id,))
         courses = cursor.fetchall()
-        return courses
+        return [Course(data) for data in courses]
     except Error as e:
         print(f"Error fetching courses by instructor ID: {e}")
         return []
@@ -149,8 +155,8 @@ def db_get_course_by_student_id(student_id):
         query = """
             SELECT 
                 c.id, c.course_name, c.department_id, c.instructor_id,
-                c.location, c.schedule, c.semester, c.capacity,
-                d.department_name
+                c.location, c.schedule, c.semester, 
+                d.department_name, c.capacity
             FROM enrollments e
             JOIN courses c ON e.course_id = c.id
             JOIN departments d ON c.department_id = d.id
