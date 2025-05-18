@@ -1,15 +1,25 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.service.main_service import get_courses_with_filters, get_department_options, get_schedule_options
+from app.service.instructor_service import get_course_by_instructor_id
+from flask_login import login_user, current_user, login_required
 
 main = Blueprint('main', __name__)
 
+# @main.route('/')
+# def index():
+#     return render_template('index.html', title='Home')
+
 @main.route('/')
 def index():
+    if current_user.is_authenticated and current_user.role == 'instructor':
+        return redirect(url_for('instructor.dashboard'))
+    if current_user.is_authenticated and current_user.role == 'student':
+        return redirect(url_for('student.dashboard'))
     return render_template('index.html', title='Home')
-
 
 @main.route('/courses/')
 def courses():
+
     # Get query parameters
     page = int(request.args.get('page', 1))
     per_page = 10
