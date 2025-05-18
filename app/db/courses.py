@@ -172,3 +172,19 @@ def db_get_course_by_student_id(student_id):
     finally:
         cursor.close()
         connection.close()
+
+def get_course_view_by_id(course_id):
+    connection = get_db_connection()
+    if connection is None:
+        return None
+    try:
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM view_course_details WHERE course_id = %s", (course_id,))
+        course = cursor.fetchone()
+        return course
+    except Error as e:
+        print(f"Error fetching course view by ID: {e}")
+        return None
+    finally:
+        cursor.close()
+        connection.close()

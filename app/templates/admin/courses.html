@@ -10,6 +10,15 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
+
+    <!-- Search Form -->
+    <div class="mb-3">
+        <form method="GET" action="{{ url_for('admin.courses') }}" class="d-flex">
+            <input type="text" class="form-control me-2" name="search" placeholder="Search by course name" value="{{ request.args.get('search', '') }}">
+            <button type="submit" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Search</button>
+        </form>
+    </div>
+
     <div class="mb-3">
         <button type="button" class="btn" style="background-color: #27AE60; color: #ECF0F1;" data-bs-toggle="modal" data-bs-target="#addCourseModal">Add Course</button>
     </div>
@@ -29,16 +38,16 @@
         </thead>
         <tbody>
             {% for course in courses %}
-            <tr>
+            <tr onclick="window.location.href='{{ url_for('admin.course_detail', course_id=course.id) }}'" style="cursor: pointer;">
                 <td>{{ course.id }}</td>
                 <td>{{ course.course_name }}</td>
                 <td>{{ course.department_id }}</td>
-                <td>{{ course.instructor_id }}</td>
-                <td>{{ course.location or '-' }}</td>
-                <td>{{ course.schedule or '-' }}</td>
-                <td>{{ course.semester or '-' }}</td>
-                <td>{{ course.availability or '-' }}</td>
-                <td>
+                <td>{{ course.instructor_id|default('-', true) }}</td>
+                <td>{{ course.location|default('-', true) }}</td>
+                <td>{{ course.schedule|default('-', true) }}</td>
+                <td>{{ course.semester|default('-', true) }}</td>
+                <td>{{ course.availability|default('-', true) }}</td>
+                <td onclick="event.stopPropagation();">
                     <button type="button" class="btn btn-sm" style="background-color: #2C3E50; color: #ECF0F1;" data-bs-toggle="modal" data-bs-target="#editCourseModal{{ course.id }}">Edit</button>
                     <form method="POST" style="display:inline;">
                         <input type="hidden" name="course_id" value="{{ course.id }}">
@@ -82,7 +91,7 @@
                                     <input type="text" class="form-control" id="semester{{ course.id }}" name="semester" value="{{ course.semester or '' }}">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="availability{{ course.id }}" class="form-label">availability</label>
+                                    <label for="availability{{ course.id }}" class="form-label">Availability</label>
                                     <input type="number" class="form-control" id="availability{{ course.id }}" name="availability" value="{{ course.availability or '' }}" min="1">
                                 </div>
                                 <button type="submit" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Save</button>
@@ -107,15 +116,15 @@
     <nav aria-label="Page navigation">
         <ul class="pagination">
             <li class="page-item {% if page == 1 %}disabled{% endif %}">
-                <a class="page-link" href="{{ url_for('admin.courses', page=page-1) if page > 1 else '#' }}">Previous</a>
+                <a class="page-link" href="{{ url_for('admin.courses', page=page-1, search=request.args.get('search', '')) if page > 1 else '#' }}">Previous</a>
             </li>
             {% for p in range(1, total_pages + 1) %}
             <li class="page-item {% if p == page %}active{% endif %}">
-                <a class="page-link" href="{{ url_for('admin.courses', page=p) }}">{{ p }}</a>
+                <a class="page-link" href="{{ url_for('admin.courses', page=p, search=request.args.get('search', '')) }}">{{ p }}</a>
             </li>
             {% endfor %}
             <li class="page-item {% if page == total_pages %}disabled{% endif %}">
-                <a class="page-link" href="{{ url_for('admin.courses', page=page+1) if page < total_pages else '#' }}">Next</a>
+                <a class="page-link" href="{{ url_for('admin.courses', page=page+1, search=request.args.get('search', '')) if page < total_pages else '#' }}">Next</a>
             </li>
         </ul>
     </nav>
@@ -157,7 +166,7 @@
                             <input type="text" class="form-control" id="semester" name="semester">
                         </div>
                         <div class="mb-3">
-                            <label for="availability" class="form-label">availability</label>
+                            <label for="availability" class="form-label">Availability</label>
                             <input type="number" class="form-control" id="availability" name="availability" min="1">
                         </div>
                         <button type="submit" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Save</button>
