@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, current_user, login_required
 from app.service.auth_service import authenticate_user
-from app.service.admin_service import get_all_courses_service, delete_course_service, get_all_users_service, delete_user_service, add_user_service, edit_user_service, add_course_service, edit_course_service
+from app.service.admin_service import get_all_courses_service, delete_course_service, get_all_users_service, delete_user_service, add_user_service, edit_user_service, add_course_service, edit_course_service, get_course_details_service, enroll_student_service, get_available_students_service, unenroll_student_service
 from app.db.users import User, get_all_users
 from app.db.connector import get_db_connection
 from app.forms import CreateUserForm, UpdateUserForm, CourseForm
@@ -67,10 +67,13 @@ def courses():
                 flash(f'Error deleting course: {str(e)}', 'danger')
             return redirect(url_for('admin.courses'))
     
-    # Pagination parameters
+    # Pagination and search parameters
     page = int(request.args.get('page', 1))
     per_page = 10
-    courses, total = get_all_courses_service(page=page, per_page=per_page)
+    search_query = request.args.get('search', '').strip()
+    
+    # Fetch courses with search filter
+    courses, total = get_all_courses_service(page=page, per_page=per_page, search_query=search_query)
     total_pages = (total + per_page - 1) // per_page
 
     # Populate instructor choices dynamically
@@ -80,6 +83,54 @@ def courses():
     course_form.instructor_id.choices = instructors 
     return render_template('admin/courses.html', title='Courses Dashboard', courses=courses, 
                           course_form=course_form, page=page, total_pages=total_pages)
+
+@admin.route('/dashboard/courses/<int:course_id>')
+@login_required
+def course_detail(course_id):
+    if current_user.role != 'admin':
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('main.index'))
+    
+    course, enrolled_students = get_course_details_service(course_id)
+    available_students = get_available_students_service(course_id)
+
+    if not course:
+        flash('Course not found.', 'danger')
+        return redirect(url_for('admin.courses'))
+    
+    return render_template('admin/course_detail.html', title=f'Course Detail - {course["course_name"]}', 
+                          course=course, enrolled_students=enrolled_students, available_students=available_students)
+
+
+@admin.route('/dashboard/courses/<int:course_id>/enroll', methods=['POST'])
+@login_required
+def enroll_student(course_id):
+    if current_user.role != 'admin':
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('admin.course_detail', course_id=course_id))
+    
+    student_id = request.form.get('student_id')
+    if student_id:
+        try:
+            enroll_student_service(int(student_id), course_id)
+            flash('Student enrolled successfully!', 'success')
+        except Exception as e:
+            flash(f'Error enrolling student: {str(e)}', 'danger')
+    return redirect(url_for('admin.course_detail', course_id=course_id))
+
+
+@admin.route('/dashboard/courses/<int:course_id>/unenroll/<int:student_id>', methods=['POST'])
+@login_required
+def unenroll_student(course_id, student_id):
+    if current_user.role != 'admin':
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('admin.course_detail', course_id=course_id))
+    
+    try:
+        unenroll_student_service(student_id, course_id)
+    except Exception as e:
+        flash(f'Error unenrolling student: {str(e)}', 'danger')
+    return redirect(url_for('admin.course_detail', course_id=course_id))
 
 @admin.route('/dashboard/courses/add', methods=['POST'])
 @login_required
