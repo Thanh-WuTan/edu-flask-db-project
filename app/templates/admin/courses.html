@@ -23,6 +23,7 @@
                 <th>Location</th>
                 <th>Schedule</th>
                 <th>Semester</th>
+                <th>Capacity</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -36,6 +37,7 @@
                 <td>{{ course.location or '-' }}</td>
                 <td>{{ course.schedule or '-' }}</td>
                 <td>{{ course.semester or '-' }}</td>
+                <td>{{ course.capacity or '-' }}</td>
                 <td>
                     <button type="button" class="btn btn-sm" style="background-color: #2C3E50; color: #ECF0F1;" data-bs-toggle="modal" data-bs-target="#editCourseModal{{ course.id }}">Edit</button>
                     <form method="POST" style="display:inline;">
@@ -79,6 +81,10 @@
                                     <label for="semester{{ course.id }}" class="form-label">Semester</label>
                                     <input type="text" class="form-control" id="semester{{ course.id }}" name="semester" value="{{ course.semester or '' }}">
                                 </div>
+                                <div class="mb-3">
+                                    <label for="capacity{{ course.id }}" class="form-label">Capacity</label>
+                                    <input type="number" class="form-control" id="capacity{{ course.id }}" name="capacity" value="{{ course.capacity or '' }}" min="1">
+                                </div>
                                 <button type="submit" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Save</button>
                             </form>
                         </div>
@@ -90,7 +96,7 @@
             </div>
             {% else %}
             <tr>
-                <td colspan="8" class="text-center">No courses found.</td>
+                <td colspan="9" class="text-center">No courses found.</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -149,6 +155,10 @@
                         <div class="mb-3">
                             <label for="semester" class="form-label">Semester</label>
                             <input type="text" class="form-control" id="semester" name="semester">
+                        </div>
+                        <div class="mb-3">
+                            <label for="capacity" class="form-label">Capacity</label>
+                            <input type="number" class="form-control" id="capacity" name="capacity" min="1">
                         </div>
                         <button type="submit" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Save</button>
                     </form>

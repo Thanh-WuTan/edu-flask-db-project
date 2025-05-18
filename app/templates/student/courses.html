@@ -9,22 +9,25 @@
                 <tr>
                     <th>Course ID</th>
                     <th>Course Name</th>
-                    <th>Department ID</th>
+                    <th>Department Name</th>
                     <th>Instructor ID</th>
                     <th>Location</th>
                     <th>Schedule</th>
                     <th>Semester</th>
+                    <th>Capacity</th>
                 </tr>
             </thead>
             <tbody>
                 {% for course in courses %}
                 <tr>
-                    <td>{{ course[0] }}</td>  {# ID #}
-                    <td>{{ course[1] }}</td>  {# Course Name #}
-                    <td>{{ course[2] }}</td>  {# Department ID #}
-                    <td>{{ course[4] }}</td>  {# Location #}
-                    <td>{{ course[5] }}</td>  {# Schedule #}
-                    <td>{{ course[6] }}</td>  {# Semester #}
+                    <td>{{ course.id }}</td>  {# ID #}
+                    <td>{{ course.course_name }}</td>  {# Course Name #}
+                    <td>{{ course.department_name }}</td>  {# Department Name #}
+                    <td>{{ course.instructor_id }}</td>  {# Instructor ID #}
+                    <td>{{ course.location }}</td>  {# Location #}
+                    <td>{{ course.schedule }}</td>  {# Schedule #}
+                    <td>{{ course.semester }}</td>  {# Semester #}
+                    <td>{{ course.capacity }}</td>  {# Capacity #}
                 </tr>
                 {% endfor %}
             </tbody>
