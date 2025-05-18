@@ -11,7 +11,7 @@ load_dotenv()
 # Database configuration from .env
 DB_CONFIG = {
     "host": os.getenv("MYSQL_HOST", "db"),
-    "user": os.getenv("MYSQ_USER", "root"),
+    "user": os.getenv("MYSQ_USER", "root"), 
     "password": os.getenv("MYSQL_PASSWORD", "abc123"),
     "database": os.getenv("MYSQL_DB", "edudb"),
     "port": int(os.getenv("MYSQL_PORT", 3306))

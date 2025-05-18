@@ -1,4 +1,4 @@
-from .con import get_db_connection
+from .connector import get_db_connection
 from mysql.connector import Error
 
 def get_all_departments():
