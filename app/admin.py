@@ -98,8 +98,9 @@ def add_course():
         location = form.location.data
         schedule = form.schedule.data
         semester = form.semester.data
+        capacity = form.capacity.data
         try:
-            add_course_service(course_name, department_id, instructor_id, location, schedule, semester)
+            add_course_service(course_name, department_id, instructor_id, location, schedule, semester, capacity)
             flash('Course added successfully', 'success')
             return redirect(url_for('admin.courses'))
         except Exception as e:
