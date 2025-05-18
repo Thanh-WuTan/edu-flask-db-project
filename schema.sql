@@ -91,6 +91,17 @@ END //
 DELIMITER ;
 
 
+DELIMITER //
+CREATE PROCEDURE get_student_department_counts()
+BEGIN
+    SELECT d.department_name, COUNT(u.id) AS student_count
+    FROM users u
+    LEFT JOIN departments d ON u.department_id = d.id
+    WHERE u.role = (SELECT id FROM roles WHERE role_name = 'student')
+    GROUP BY d.department_name;
+END //
+DELIMITER ;
+
 -- Trigger to manage course availability on enrollment
 DELIMITER //
 CREATE TRIGGER before_enrollment_insert

@@ -103,7 +103,7 @@ def generate_test_data():
             print(f"Failed to create instructor: {username}")
 
     # Create 100 random courses
-    for _ in range(100):
+    for _ in range(10):
         course_name = random.choice(COURSE_NAMES)
         department_id = random.randint(1, 5)  # Departments 1-5
         instructor_id = random.choice(instructors) if instructors else None
@@ -122,7 +122,7 @@ def generate_students():
     # create 200 random students 
     connection = get_db_connection()
     students = []
-    for i in range(200):
+    for i in range(10):
         username = f"student_{i+1:03d}"
         email = generate_random_email(username)
         password = generate_random_password()
