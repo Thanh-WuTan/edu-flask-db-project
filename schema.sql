@@ -90,6 +90,34 @@ BEGIN
 END //
 DELIMITER ;
 
+
+-- Trigger to manage course availability on enrollment
+DELIMITER //
+CREATE TRIGGER before_enrollment_insert
+BEFORE INSERT ON enrollments
+FOR EACH ROW
+BEGIN
+    DECLARE current_availability INT;
+    SELECT availability INTO current_availability FROM courses WHERE id = NEW.course_id FOR UPDATE;
+    IF current_availability <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot enroll: Course has no available seats.';
+    END IF;
+    UPDATE courses SET availability = availability - 1 WHERE id = NEW.course_id;
+END //
+DELIMITER ;
+
+
+-- Trigger to increase course availability on unenrollment
+DELIMITER //
+CREATE TRIGGER after_enrollment_delete
+AFTER DELETE ON enrollments
+FOR EACH ROW
+BEGIN
+    UPDATE courses SET availability = availability + 1 WHERE id = OLD.course_id;
+END //
+DELIMITER ;
+
 -- Create view for course information with instructor details (without enrolled students)
 CREATE VIEW view_course_details AS
 SELECT 
