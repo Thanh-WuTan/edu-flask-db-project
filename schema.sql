@@ -89,3 +89,19 @@ BEGIN
     GROUP BY d.department_name;
 END //
 DELIMITER ;
+
+-- Create view for course information with instructor details (without enrolled students)
+CREATE VIEW view_course_details AS
+SELECT 
+    c.id AS course_id,
+    c.course_name,
+    c.department_id,
+    c.instructor_id,
+    u.username AS instructor_name,
+    c.location,
+    c.schedule,
+    c.semester,
+    c.availability
+FROM 
+    courses c
+    LEFT JOIN users u ON c.instructor_id = u.id;
