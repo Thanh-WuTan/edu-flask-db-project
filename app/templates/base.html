@@ -36,7 +36,7 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('main.courses') }}">Full courses</a>
+                                <a class="nav-link" href="{{ url_for('main.courses') }}">Courses</a>
                             </li>
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
@@ -45,6 +45,14 @@
                         {% if current_user.role == 'admin' %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a>
+                            </li>
+                        {% elif current_user.role == 'student' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('student.dashboard') }}">Student Dashboard</a>
+                            </li>
+                        {% elif current_user.role == 'instructor' %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('instructor.dashboard') }}">Instructor Dashboard</a>
                             </li>
                         {% endif %}
                     {% else %}
