@@ -11,11 +11,11 @@ def get_all_courses_service(page=1, per_page=10):
 def delete_course_service(course_id):
     delete_course(course_id)
 
-def add_course_service(course_name, department_id, instructor_id, location, schedule, semester):
-    create_course(course_name, department_id, instructor_id, location, schedule, semester)
+def add_course_service(course_name, department_id, instructor_id, location, schedule, semester, capacity):
+    create_course(course_name, department_id, instructor_id, location, schedule, semester, capacity)
 
-def edit_course_service(course_id, course_name, department_id, instructor_id, location, schedule, semester):
-    update_course(course_id, course_name, department_id, instructor_id, location, schedule, semester)
+def edit_course_service(course_id, course_name, department_id, instructor_id, location, schedule, semester, capacity):
+    update_course(course_id, course_name, department_id, instructor_id, location, schedule, semester, capacity)
 
 def get_all_users_service():
     return get_all_users()

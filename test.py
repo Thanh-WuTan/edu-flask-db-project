@@ -68,15 +68,15 @@ def create_instructor(username, email, password):
         cursor.close()
         connection.close()
 
-def create_course(course_name, department_id, instructor_id, location, schedule, semester):
+def create_course(course_name, department_id, instructor_id, location, schedule, semester, capacity):
     connection = get_db_connection()
     if connection is None:
         return False
     try:
         cursor = connection.cursor()
         cursor.execute(
-            "INSERT INTO courses (course_name, department_id, instructor_id, location, schedule, semester) VALUES (%s, %s, %s, %s, %s, %s)",
-            (course_name, department_id, instructor_id, location, schedule, semester)
+            "INSERT INTO courses (course_name, department_id, instructor_id, location, schedule, semester, capacity) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (course_name, department_id, instructor_id, location, schedule, semester, capacity)
         )
         connection.commit()
         return True
@@ -110,11 +110,39 @@ def generate_test_data():
         location = random.choice(LOCATIONS)
         schedule = random.choice(SCHEDULES)
         semester = random.choice(SEMESTERS)
-        success = create_course(course_name, department_id, instructor_id, location, schedule, semester)
+        capacity = random.randint(20, 100)  # Random capacity between 20 and 100
+        success = create_course(course_name, department_id, instructor_id, location, schedule, semester, capacity)
+         # Assuming the create_course function has been modified to accept capacity
         if success:
             print(f"Created course: {course_name}, Instructor ID: {instructor_id}, Schedule: {schedule}")
         else:
             print(f"Failed to create course: {course_name}")
+
+def generate_students(): 
+    # create 200 random students 
+    connection = get_db_connection()
+    students = []
+    for i in range(200):
+        username = f"student_{i+1:03d}"
+        email = generate_random_email(username)
+        password = generate_random_password()
+        try:
+            cursor = connection.cursor()
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            cursor.execute(
+                "INSERT INTO users (username, email, password, role, department_id) VALUES (%s, %s, %s, %s, %s)",
+                (username, email, hashed_password, 3, random.randint(1, 5))  # role_id 3 is 'student'
+            )
+            connection.commit()
+            cursor.execute("SELECT LAST_INSERT_ID()")
+            student_id = cursor.fetchone()[0]
+            students.append(student_id)
+            print(f"Created student: {username}, ID: {student_id}, Email: {email}, Password: {password}")
+        except mysql.connector.Error as e:
+            connection.rollback()
+            print(f"Error creating student {username}: {e}")
+        finally:
+            cursor.close()
 
 if __name__ == "__main__":
     # Ensure required libraries are installed
@@ -125,5 +153,5 @@ if __name__ == "__main__":
         print("Please install required packages: pip install python-dotenv mysql-connector-python bcrypt")
         exit(1)
     
-    generate_test_data()
+    generate_students()
     print("Test data generation completed.")
