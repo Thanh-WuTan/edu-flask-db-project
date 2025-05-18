@@ -49,6 +49,7 @@
                 <th>Location</th>
                 <th>Schedule</th>
                 <th>Semester</th>
+                <th>Capacity</th>
             </tr>
         </thead>
         <tbody>
@@ -61,6 +62,7 @@
                 <td>{{ course.location or '-' }}</td>
                 <td>{{ course.schedule or '-' }}</td>
                 <td>{{ course.semester or '-' }}</td>
+                <td>{{ course.capacity or '-' }}</td>
             </tr>
             {% else %}
             <tr>
