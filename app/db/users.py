@@ -1,4 +1,4 @@
-from .con import get_db_connection
+from .connector import get_db_connection
 
 class User:
     def __init__(self, user_data):

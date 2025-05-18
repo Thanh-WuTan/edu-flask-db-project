@@ -36,8 +36,8 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.courses') }}">Courses</a>
-                    </li>
+                                <a class="nav-link" href="{{ url_for('main.courses') }}">Full courses</a>
+                            </li>
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
@@ -45,11 +45,6 @@
                         {% if current_user.role == 'admin' %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a>
-                            </li>
-                        {% endif %}
-                        {% if current_user.role == 'instructor' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('instructor.dashboard') }}">Instructor Dashboard</a>
                             </li>
                         {% endif %}
                     {% else %}
