@@ -1,0 +1,164 @@
+---
+title: Design Document
+authors:
+  - name: Vu Ai Thanh
+  - name: Truong Gia Bao
+  - name: Nguyen Tuan Anh
+table-of-contents: true
+number-sections: true
+toc-depth: 2
+toc-expand: true
+crossref:
+  chapters: true
+date: today 
+date-format: DD-MM-YYYY
+# abstract-title: Abstract 
+# abstract: In this report, I briefly introduce Avocado, my static dataflow analyzer for Windows Kernel Driver - its features, binary analysis primitives, as well as some example use cases. Limitations & future potential improvements are also introduced, as my to-do list. 
+format:
+  pdf: 
+    documentclass: report
+    include-in-header: 
+      text: |
+        \usepackage{fvextra}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{
+          commandchars=\\\{\},
+          breaklines, breaknonspaceingroup, breakanywhere
+        }
+# bibliography: references.bib
+geometry: 
+  - inner=3cm
+  - outer=4cm
+  - top=3cm
+  - bottom=4cm
+  - headsep=22pt
+  - headheight=11pt
+  - footskip=33pt
+  - ignorehead
+  - ignorefoot
+  - heightrounded
+---
+
+# Conceptual & Logical Design
+
+The project is aimed to provide a yet minimal but still functional of a management application for a education institution. The main actors that interacts to the app contains: `Administrators`, `Instructors`, and `Students`. There activities will go around the `Courses` at school. 
+
+## Functional and Non-functional Designs 
+
+### Functional 
+
+#### User Authentication and Authorization: 
+
++ The system must allow users (students, instructors, and admins) to log in using email and password credentials.
++ Users must be assigned roles (student, instructor, admin) with role-specific access to features (e.g., students can enroll/unenroll, instructors can view/manage courses, admins can manage users and courses).
+
+#### Course Management
+
++ The system must display a list of courses with filters by course name, department, and schedule, supporting pagination (10 courses per page).
++ Users can view detailed course information (e.g., ID, name, department, instructor, location, schedule, semester, availability) on a course detail page.
++ Instructors and admins can add, edit, and delete courses, while students can only view course details.
++ The system must track and display enrolled students for each course.
+
+#### Enrollment Management:
+
++ Students must be able to enroll in a course if availability is greater than zero and they are not already enrolled, with a confirmation dialog before submission.
++ Students must be able to unenroll from a course if they are enrolled, with a confirmation dialog before submission.  
++ The system must update course availability automatically when students enroll or unenroll.
++ The system must prevent enrollment if the course is full ($\text{availability} \leq 0$) or if the student is already enrolled.
+
+#### User Interface and Navigation:
+
++ The system must provide a responsive web interface using Bootstrap for consistent styling across devices.
++ Each role (student, instructor, admin) must have a dedicated dashboard with role-specific options.
++ Flash messages must be displayed to provide feedback on actions (e.g., success or error messages for login, enrollment).
+
+
+#### Analytics 
+
++ For management roles like `Administrators` and `Instructors`, they will have access to several dashboards to report about the courses at the institution, or the courses that the instructors are involving in. 
+
+
+### Non-functional 
+
++ **Performance**: 
+  + Having high uptime, with all errors are being handled to prevent crashes. 
+  + Queries should execute within a reasonable time, with minimal complexity. Current target is 0.5 seconds for a dataset of 1000 enrollments. 
++ **Security**:
+  + Passwords are encrypted when being stored in the database, with supports of password hashing function `bcrypt`. 
+  + Access control systems based on roles are designed properly, prevent unauthorized information access or disclosure. 
+  + Preventions or mitigations of common web security vulnerabilities as well as applications using SQL database system: SQL Injection, Cross-site Scripting, etc. 
++ **Scalability**: 
+  + The application is scalable with increasing numbers of users in an acceptable level, against around 300 users under peak time. 
++ **Usability**: 
+  + Provide easy-to-navigate interface, with responsive User Interface with `Bootstrap` library.
++ **Reliability**:
+  + Ensure data integrity with normalized database design (3NF) and constraints.
+
+## Entity-Relationship Diagram
+
+![Entity-Relationship Diagram of the project](./images/er.png){width="70%"}
+
+## Proof of Normalization Form
+
+### First Normal Form (1NF):
+
++ All tables have primary keys
++ All attributes are atomic
++ No repeating groups
+
+### Second Normal Form (2NF):
+
++ All non-key attributes are fully functionally dependent on their primary keys
++ No partial dependencies exist
+
+### Third Normal Form (3NF):
+
++ No transitive dependencies
++ Proper use of foreign keys for references
++ Related data is properly normalized into separate tables
+
+# Physical Schema Definition 
+
+## Complete DDL scripts of all tables 
+
+The full script is in our GitHub repository at this [link](https://github.com/Thanh-WuTan/edu-flask-db-project/blob/capacity/schema.sql).
+
+## Definitions of views, indexes, partitioning strategy 
+
+< cuu em voi cac anh oi > 
+
+# Task Division & Project Plan 
+
+## Task Division 
+
+| Member          | Role                           | Detailed Description                                                                                                           |
+| --------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| Vu Ai Thanh     | Project Leader, Main Developer | + Design the database system & blueprints of the application<br>+ Implement core functions in administrator's role & analytics |
+| Truong Gia Bao  | Main Developer                 | + Implement core functions in students & instructor roles<br>+ Design UX/UI of the application                                 |
+| Nguyen Tuan Anh | Developer                      | + Refactoring minor issues on codebases<br>+ Documentation writer                                                              |
+
+## Project Plan 
+
+< Gantt chart go here> 
+
+# Supporting Documentation 
+
+## Design Rationale 
+
+### Tables 
+
+The project is centering around the normal operations of course enrollment in education institutes. Therefore, our database designs will involves three main actors: 
+
++ Administrators: People who manage the main direction of courses in the institutes
++ Instructors: People who are in charge of more micro levels: teach, and manage the classes. 
++ Students: People who take the courses. 
+
+From these descriptions, we are adding `Courses` that are provided by the school, taught by instructors; as well as `Enrollments` to solve the involvement of students into the courses. There are several supporting tables such as `roles` and `departments` to provide the access control system in the business logic of the application, or to bring the application more realistic. 
+
+### Keys 
+
+As any other systems, all objects in our database is managed via their primary key (via ID of administrators, instructors, students, courses, etc.). With the enrollments of student, as it is a many-to-many relationship, we bridge them with one more table: `Enrollments`. The foreign keys referenced in the tables showing the relationship between the objects in the system: Each students & instructors are in departments of the institute, each students' courses must be managed by a department and an instructors, etc. 
+
+## Notes on data loading approaches 
+
+In the implementation, we are using random data to provide a quick test bench for the application. The data generate script is available at the project folder. In the future, the script can increase up the load for security & performance testing. 
+
