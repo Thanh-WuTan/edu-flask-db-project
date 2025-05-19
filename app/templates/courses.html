@@ -54,19 +54,20 @@
         </thead>
         <tbody>
             {% for course in courses %}
-            <tr>
-                <td>{{ course.id }}</td>
-                <td>{{ course.course_name }}</td>
-                <td>{{ course.department_name }}</td>
-                <td>{{ course.instructor_id or '-' }}</td>
-                <td>{{ course.location or '-' }}</td>
-                <td>{{ course.schedule or '-' }}</td>
-                <td>{{ course.semester or '-' }}</td>
-                <td>{{ course.availability or '-' }}</td>
+            <tr onclick="window.location.href='{{ url_for('main.course_detail', course_id=course.id) }}'" style="cursor: pointer;">
+                    <td>{{ course.id }}</td>
+                    <td>{{ course.course_name }}</td>
+                    <td>{{ course.department_name }}</td>
+                    <td>{{ course.instructor_id or '-' }}</td>
+                    <td>{{ course.location or '-' }}</td>
+                    <td>{{ course.schedule or '-' }}</td>
+                    <td>{{ course.semester or '-' }}</td>
+                    <td>{{ course.availability or '-' }}</td>
+                </a>
             </tr>
             {% else %}
             <tr>
-                <td colspan="7" class="text-center">No courses found.</td>
+                <td colspan="8" class="text-center">No courses found.</td>
             </tr>
             {% endfor %}
         </tbody>

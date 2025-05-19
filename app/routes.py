@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from app.service.main_service import get_courses_with_filters, get_department_options, get_schedule_options
+from app.service.main_service import get_courses_with_filters, get_department_options, get_schedule_options, get_course_details_service
 from app.service.instructor_service import get_course_by_instructor_id
 from flask_login import login_user, current_user, login_required
 
@@ -44,3 +44,11 @@ def courses():
                           search_query=search_query, department_id=department_id or 0, schedule=schedule,
                           instructor_id=instructor_id or 0, departments=departments, schedules=schedules, 
                           instructors=None)
+
+@main.route('/courses/<int:course_id>')
+def course_detail(course_id):
+    course, enrolled_students = get_course_details_service(course_id)
+    if not course:
+        flash('Course not found.', 'danger')
+        return redirect(url_for('main.index'))
+    return render_template('course_detail.html', title=f'Course Detail - {course["course_name"]}', course=course, enrolled_students=enrolled_students)
