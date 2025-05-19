@@ -1,0 +1,97 @@
+{% extends 'instructor/instructor_panel.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 style="color: #2C3E50;">Course Detail - {{ course.course_name }}</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Course Information -->
+    <div class="card mb-4 shadow" style="background-color: #FFFFFF; border: none;">
+        <div class="card-body">
+            <h3 style="color: #2C3E50;">Course Details</h3>
+            <p><strong>Course ID:</strong> {{ course.course_id }}</p>
+            <p><strong>Course Name:</strong> {{ course.course_name }}</p>
+            <p><strong>Department ID:</strong> {{ course.department_id }}</p>
+            <p><strong>Instructor ID:</strong> {{ course.instructor_id or 'N/A' }}</p>
+            <p><strong>Instructor Name:</strong> {{ course.instructor_name or 'N/A' }}</p>
+            <p><strong>Location:</strong> {{ course.location or 'N/A' }}</p>
+            <p><strong>Schedule:</strong> {{ course.schedule or 'N/A' }}</p>
+            <p><strong>Semester:</strong> {{ course.semester or 'N/A' }}</p>
+            <p><strong>Availability:</strong> {{ course.availability }}</p>
+            <button type="button" class="btn" style="background-color: #2C3E50; color: #ECF0F1;" data-bs-toggle="modal" data-bs-target="#addStudentModal">Add New Student</button>
+        </div>
+    </div>
+
+    <!-- Enrolled Students -->
+    <div class="card mb-4 shadow" style="background-color: #FFFFFF; border: none;">
+        <div class="card-body">
+            <h3 style="color: #2C3E50;">Enrolled Students</h3>
+            {% if enrolled_students %}
+                <table class="table table-striped">
+                    <thead style="background-color: #34495E; color: #ECF0F1;">
+                        <tr>
+                            <th>ID</th>
+                            <th>Email</th>
+                            <th>Username</th>
+                            <th>Department</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in enrolled_students %}
+                        <tr>
+                            <td>{{ student.id }}</td>
+                            <td>{{ student.email }}</td>
+                            <td>{{ student.username }}</td>
+                            <td>{{ student.department_name }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('instructor.unenroll_student', course_id=course.course_id, student_id=student.id) }}" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to unenroll this student?')">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No students enrolled yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="background-color: #34495E; color: #ECF0F1;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addStudentModalLabel">Add Student to {{ course.course_name }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{{ url_for('instructor.enroll_student', course_id=course.course_id) }}">
+                        <div class="mb-3">
+                            <label for="student_id" class="form-label">Select Student</label>
+                            <select class="form-select" id="student_id" name="student_id" required>
+                                <option value="">Select a student</option>
+                                {% for student in available_students %}
+                                <option value="{{ student.id }}">{{ student.username }} ({{ student.email }}) - {{ student.department_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Enroll Student</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
