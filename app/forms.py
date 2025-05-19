@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SelectField, IntegerField
-from wtforms.validators import DataRequired, Email, Optional
+from wtforms.validators import DataRequired, Email, Optional, ValidationError
+import re
+
 
 class CreateUserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -44,8 +46,28 @@ class CourseForm(FlaskForm):
     semester = StringField('Semester', validators=[Optional()])
     availability = IntegerField('Availability', validators=[DataRequired()])
 
+    def validate_semester(self, field):
+        pattern = r'^(Spring|Fall|Summer) \d{4}$'
+        if field.data and not re.match(pattern, field.data.strip()):
+            raise ValidationError('Semester must be in the format "Spring/Fall/Summer 2024".')
+
+    def validate_schedule(self, field):
+        pattern = r'^(M|T|W|TH|F|S|SU)(,\s*(M|T|W|TH|F|S|SU))*$'
+        if field.data and not re.match(pattern, field.data.strip()):
+            raise ValidationError('Schedule must be comma-separated codes like "M, W, F" (M=Mon, T=Tue, etc.).')
+
 class CourseInstructorForm(FlaskForm):
     course_name = StringField('Course Name', validators=[DataRequired()])
     location = StringField('Location', validators=[Optional()])
     schedule = StringField('Schedule', validators=[Optional()])
     semester = StringField('Semester', validators=[Optional()])
+
+    def validate_semester(self, field):
+        pattern = r'^(Spring|Fall|Summer) \d{4}$'
+        if field.data and not re.match(pattern, field.data.strip()):
+            raise ValidationError('Semester must be in the format "Spring/Fall/Summer 2024".')
+
+    def validate_schedule(self, field):
+        pattern = r'^(M|T|W|TH|F|S|SU)(,\s*(M|T|W|TH|F|S|SU))*$'
+        if field.data and not re.match(pattern, field.data.strip()):
+            raise ValidationError('Schedule must be comma-separated codes like "M, W, F" (M=Mon, T=Tue, etc.).')
