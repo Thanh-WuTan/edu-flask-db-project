@@ -16,7 +16,7 @@ date-format: DD-MM-YYYY
 # abstract: In this report, I briefly introduce Avocado, my static dataflow analyzer for Windows Kernel Driver - its features, binary analysis primitives, as well as some example use cases. Limitations & future potential improvements are also introduced, as my to-do list. 
 format:
   pdf: 
-    documentclass: report
+    documentclass: article
     include-in-header: 
       text: |
         \usepackage{fvextra}
@@ -124,7 +124,19 @@ The full script is in our GitHub repository at this [link](https://github.com/Th
 
 ## Definitions of views, indexes, partitioning strategy 
 
-< cuu em voi cac anh oi > 
+### Views
+
+Currently, there is one view `view_course_details` in the database. It provides a simplified and denormalized view of course information with instructor details. This view joins `courses` and `users` tables to provide course information along with the instructor's name, making it easier to retrieve complete course information without writing complex joins in application queries. 
+
+### Indexes
+
+The database schema defined several indexes on operations that are queried frequently during the application lifecycle.
+
+1. `idx_users_email` on users(email) - Improves login and user lookup operations
+2. `idx_users_role` on users(role) - Enhances queries filtering users by role type
+3. `idx_courses_instructor` on courses(instructor_id) - Optimizes searches for courses by instructor
+4. `idx_enrollments_student_course` on enrollments(student_id, course_id) - A composite index that improves enrollment lookups and enforces the unique constraint preventing duplicate enrollments
+
 
 # Task Division & Project Plan 
 
@@ -138,7 +150,11 @@ The full script is in our GitHub repository at this [link](https://github.com/Th
 
 ## Project Plan 
 
-< Gantt chart go here> 
+The project spans from May 6 to May 26, 2025, with the following timeline:
+
+![Gantt Chart of the Project](./images/gantt.png)
+
+This timeline shows the major phases and tasks of the project, with overlapping periods where team members work in parallel on different components. The project is structured to begin with database design and core backend development, followed by frontend implementation, and concluding with thorough testing and documentation.
 
 # Supporting Documentation 
 
@@ -160,5 +176,5 @@ As any other systems, all objects in our database is managed via their primary k
 
 ## Notes on data loading approaches 
 
-In the implementation, we are using random data to provide a quick test bench for the application. The data generate script is available at the project folder. In the future, the script can increase up the load for security & performance testing. 
+In the implementation, we are using random data to provide a quick test bench for the application. The data generate script is available at the project folder. In the future, the script can increase up the load for security & performance testing.
 
