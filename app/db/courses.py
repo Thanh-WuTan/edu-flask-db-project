@@ -8,6 +8,7 @@ class Course:
             2: "CAS",
             3: "CBM",
             4: "CHS",
+            5: "guest"
         }
         self.id = data[0]
         self.course_name = data[1]
