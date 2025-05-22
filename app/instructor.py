@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import current_user, login_required
+from app.service.main_service import get_full_course_details_service
 from app.role_required import role_required
-from app.db.courses import db_get_course_by_instructor_id, db_get_course_view_by_id
-from app.db.enrollment import db_get_enrolled_students, db_get_available_students, db_enroll_student, db_unenroll_student
+from app.db.courses import db_get_course_by_instructor_id
+from app.db.enrollment import db_enroll_student, db_unenroll_student
 
 instructor = Blueprint('instructor', __name__)
 
@@ -25,10 +26,7 @@ def courses():
 @login_required
 @role_required('instructor')
 def course_detail(course_id):
-    course = db_get_course_view_by_id(course_id)
-    enrolled_students = db_get_enrolled_students(course_id)
-    available_students = db_get_available_students(course_id)
-
+    course, enrolled_students, available_students = get_full_course_details_service(course_id)
     if not course:
         flash('Course not found.', 'danger')
         return redirect(url_for('instructor.courses'))

@@ -1,6 +1,6 @@
 from app.db.departments import db_get_all_departments
 from app.db.courses import db_get_course_view_by_id
-from app.db.enrollment import db_get_enrolled_students, db_enroll_student, db_unenroll_student
+from app.db.enrollment import db_get_enrolled_students, db_enroll_student, db_unenroll_student, db_get_available_students
 from app.db.users import db_get_all_users
 
 def get_department_options():
@@ -25,6 +25,12 @@ def get_course_details_service(course_id):
 def get_instructor_choices():
     users = db_get_all_users()
     return [(user['id'], user['username']) for user in users if user['role_name'] == 'instructor']
+
+def get_full_course_details_service(course_id):
+    course = db_get_course_view_by_id(course_id)
+    enrolled_students = db_get_enrolled_students(course_id)
+    available_students = db_get_available_students(course_id)
+    return course, enrolled_students, available_students
 
 def enroll_student_service(student_id, course_id):
     db_enroll_student(student_id, course_id)
