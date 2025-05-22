@@ -50,6 +50,32 @@ def courses():
                           course_form=course_form, page=page, total_pages=total_pages,
                           department_names=department_names, department_id=department_id or 0, schedule=schedule)
 
+@admin.route('/dashboard/courses/add', methods=['POST'])
+@login_required
+@role_required('admin')
+def add_course():
+    form = CourseForm()
+    form.instructor_id.choices = get_instructor_choices()
+    if form.validate_on_submit():
+        course_name = form.course_name.data
+        department_id = form.department_id.data
+        instructor_id = form.instructor_id.data
+        location = form.location.data
+        schedule = form.schedule.data
+        semester = form.semester.data
+        availability = form.availability.data
+        try:
+            db_create_course(course_name, department_id, instructor_id, location, schedule, semester, availability)
+            flash('Course added successfully', 'success')
+            return redirect(url_for('admin.courses'))
+        except Exception as e:
+            flash(f'Error adding course: {str(e)}', 'danger')
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'Error in {field}: {error}', 'danger')
+    return redirect(url_for('admin.courses'))
+
 @admin.route('/dashboard/courses/delete/<int:course_id>', methods=['POST'])
 @login_required
 @role_required('admin')
@@ -101,32 +127,6 @@ def unenroll_student(course_id, student_id):
         flash(f'Error unenrolling student: {str(e)}', 'danger')
     return redirect(url_for('admin.course_detail', course_id=course_id))
 
-@admin.route('/dashboard/courses/add', methods=['POST'])
-@login_required
-@role_required('admin')
-def add_course():
-    form = CourseForm()
-    form.instructor_id.choices = get_instructor_choices()
-    if form.validate_on_submit():
-        course_name = form.course_name.data
-        department_id = form.department_id.data
-        instructor_id = form.instructor_id.data
-        location = form.location.data
-        schedule = form.schedule.data
-        semester = form.semester.data
-        availability = form.availability.data
-        try:
-            db_create_course(course_name, department_id, instructor_id, location, schedule, semester, availability)
-            flash('Course added successfully', 'success')
-            return redirect(url_for('admin.courses'))
-        except Exception as e:
-            flash(f'Error adding course: {str(e)}', 'danger')
-    else:
-        for field, errors in form.errors.items():
-            for error in errors:
-                flash(f'Error in {field}: {error}', 'danger')
-    return redirect(url_for('admin.courses'))
-
 @admin.route('/dashboard/courses/edit/<int:course_id>', methods=['POST'])
 @login_required
 @role_required('admin')
@@ -152,8 +152,6 @@ def edit_course(course_id):
             for error in errors:
                 flash(f'Error in {field}: {error}', 'danger')
     return redirect(url_for('admin.courses'))
-
-
 
 @admin.route('/dashboard/users/', methods=['GET', 'POST'])
 @login_required
