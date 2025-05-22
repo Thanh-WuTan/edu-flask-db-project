@@ -2,38 +2,40 @@
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
 <div class="container mt-4">
-    <h2>My Courses</h2>
+    <h2 class="mb-4">My Courses</h2>
     {% if courses %}
-        <table class="table table-bordered table-striped mt-3">
-            <thead class="table-dark">
-                <tr>
-                    <th>Course ID</th>
-                    <th>Course Name</th>
-                    <th>Department Name</th>
-                    <th>Instructor ID</th>
-                    <th>Location</th>
-                    <th>Schedule</th>
-                    <th>Semester</th>
-                    <th>Availability</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for course in courses %}
-                <tr onclick="window.location.href='{{ url_for('student.course_detail', course_id=course.id) }}'" style="cursor: pointer;">
-                    <td>{{ course.id }}</td>  {# ID #}
-                    <td>{{ course.course_name }}</td>  {# Course Name #}
-                    <td>{{ course.department_name }}</td>  {# Department Name #}
-                    <td>{{ course.instructor_id }}</td>  {# Instructor ID #}
-                    <td>{{ course.location }}</td>  {# Location #}
-                    <td>{{ course.schedule }}</td>  {# Schedule #}
-                    <td>{{ course.semester }}</td>  {# Semester #}
-                    <td>{{ course.availability }}</td>  {# availability #}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-responsive shadow-sm rounded-3 border">
+            <table class="table table-bordered table-striped align-middle mb-0">
+                <thead style="background-color: #f8f9fa;" class="text-center">
+                    <tr>
+                        <th class="text-secondary">Course ID</th>
+                        <th class="text-secondary">Course Name</th>
+                        <th class="text-secondary">Department Name</th>
+                        <th class="text-secondary">Instructor ID</th>
+                        <th class="text-secondary">Location</th>
+                        <th class="text-secondary">Schedule</th>
+                        <th class="text-secondary">Semester</th>
+                        <th class="text-secondary">Availability</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    {% for course in courses %}
+                    <tr onclick="window.location.href='{{ url_for('student.course_detail', course_id=course.id) }}'" style="cursor: pointer;">
+                        <td>{{ course.id }}</td>
+                        <td>{{ course.course_name }}</td>
+                        <td>{{ course.department_name }}</td>
+                        <td>{{ course.instructor_id }}</td>
+                        <td>{{ course.location }}</td>
+                        <td>{{ course.schedule }}</td>
+                        <td>{{ course.semester }}</td>
+                        <td>{{ course.availability }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
-        <p>No courses found.</p>
+        <p class="text-muted">No courses found.</p>
     {% endif %}
 </div>
 {% endblock %}
