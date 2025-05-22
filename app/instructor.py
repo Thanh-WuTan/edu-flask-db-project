@@ -156,8 +156,9 @@ def edit_course(course_id):
         location = form.location.data
         schedule = form.schedule.data
         semester = form.semester.data
+        availability = form.availability.data
         try:
-            edit_course_service(course_id, course_name, department_id, instructor_id, location, schedule, semester)
+            edit_course_service(course_id, course_name, department_id, instructor_id, location, schedule, semester, availability)
             flash('Course updated successfully', 'success')
             return redirect(url_for('instructor.courses'))
         except Exception as e:

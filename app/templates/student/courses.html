@@ -19,7 +19,7 @@
             </thead>
             <tbody>
                 {% for course in courses %}
-                <tr>
+                <tr onclick="window.location.href='{{ url_for('student.course_detail', course_id=course.id) }}'" style="cursor: pointer;">
                     <td>{{ course.id }}</td>  {# ID #}
                     <td>{{ course.course_name }}</td>  {# Course Name #}
                     <td>{{ course.department_name }}</td>  {# Department Name #}

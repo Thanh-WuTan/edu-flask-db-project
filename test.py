@@ -144,6 +144,35 @@ def generate_students():
         finally:
             cursor.close()
 
+def generate_enrollments():
+    # create around 10000 random enrollments. Enroll each student in 1-5 courses 
+    
+    connection = get_db_connection()
+    if connection is None:
+        return
+    try:
+        cursor = connection.cursor()
+        for student_id in range(1, 2000):  # Assuming student IDs are from 1001 to 1999
+            # Enroll each student in 1-5 random courses
+            num_courses = random.randint(1, 5)
+            course_ids = random.sample(range(161, 171), num_courses)  # Assuming 150 courses exist
+            print(f"Enrolling student {student_id} in {num_courses} courses: {course_ids}")
+            try:
+                for course_id in course_ids:
+                    print(f"Enrolling student {student_id} in course {course_id}")
+                    cursor.execute(
+                        "INSERT INTO enrollments (student_id, course_id) VALUES (%s, %s)",
+                        (student_id, course_id)
+                    )
+            except Exception as e: 
+                continue
+        connection.commit()
+    except mysql.connector.Error as e:
+        connection.rollback()
+        print(f"Error generating enrollments: {e}")
+    finally:
+        cursor.close()
+        connection.close()
 if __name__ == "__main__":
     # Ensure required libraries are installed
     try:
@@ -154,5 +183,6 @@ if __name__ == "__main__":
         exit(1)
         
     generate_test_data()
+    generate_enrollments()
     generate_students()
     print("Test data generation completed.")
