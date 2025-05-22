@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, current_user, login_required
+from app.role_required  import role_required
 from app.service.auth_service import authenticate_user
 from app.service.admin_service import (
     get_instructor_choices, 
@@ -36,11 +37,8 @@ def admin_login():
 
 @admin.route('/dashboard')
 @login_required
-def dashboard():
-    if current_user.role != 'admin':
-        flash('Unauthorized access.', 'danger')
-        return redirect(url_for('main.index'))
-    
+@role_required('admin')
+def dashboard():    
     user_role_counts = get_user_role_counts_service()
     course_dept_counts = get_course_department_counts_service()
     student_dept_counts = get_student_department_counts_service()
@@ -52,11 +50,8 @@ def dashboard():
 
 @admin.route('/dashboard/courses/')
 @login_required
+@role_required('admin')
 def courses():
-    if current_user.role != 'admin':
-        flash('Unauthorized access.', 'danger')
-        return redirect(url_for('main.index'))
-    
     # Pagination and search parameters
     page = int(request.args.get('page', 1))
     per_page = 10
@@ -79,10 +74,8 @@ def courses():
 
 @admin.route('/dashboard/courses/delete/<int:course_id>', methods=['POST'])
 @login_required
+@role_required('admin')
 def delete_course(course_id):
-    if current_user.role != 'admin':
-        flash('Unauthorized access.', 'danger')
-        return redirect(url_for('admin.courses'))
     try:
         delete_course_service(course_id)
         flash('Course deleted successfully!', 'success')
@@ -92,11 +85,8 @@ def delete_course(course_id):
 
 @admin.route('/dashboard/courses/<int:course_id>')
 @login_required
-def course_detail(course_id):
-    if current_user.role != 'admin':
-        flash('Unauthorized access.', 'danger')
-        return redirect(url_for('main.index'))
-    
+@role_required('admin')
+def course_detail(course_id):    
     course, enrolled_students = get_course_details_service(course_id)
     available_students = get_available_students_service(course_id)
 
@@ -110,11 +100,8 @@ def course_detail(course_id):
 
 @admin.route('/dashboard/courses/<int:course_id>/enroll', methods=['POST'])
 @login_required
+@role_required('admin')
 def enroll_student(course_id):
-    if current_user.role != 'admin':
-        flash('Unauthorized access.', 'danger')
-        return redirect(url_for('admin.course_detail', course_id=course_id))
-    
     student_id = request.form.get('student_id')
     if student_id:
         try:
@@ -127,11 +114,8 @@ def enroll_student(course_id):
 
 @admin.route('/dashboard/courses/<int:course_id>/unenroll/<int:student_id>', methods=['POST'])
 @login_required
+@role_required('admin')
 def unenroll_student(course_id, student_id):
-    if current_user.role != 'admin':
-        flash('Unauthorized access.', 'danger')
-        return redirect(url_for('admin.course_detail', course_id=course_id))
-    
     try:
         unenroll_student_service(student_id, course_id)
     except Exception as e:
@@ -140,10 +124,8 @@ def unenroll_student(course_id, student_id):
 
 @admin.route('/dashboard/courses/add', methods=['POST'])
 @login_required
+@role_required('admin')
 def add_course():
-    if current_user.role != 'admin':
-        flash('Unauthorized access', 'danger')
-        return redirect(url_for('admin.courses'))
     form = CourseForm()
     form.instructor_id.choices = get_instructor_choices()
     if form.validate_on_submit():
@@ -168,10 +150,8 @@ def add_course():
 
 @admin.route('/dashboard/courses/edit/<int:course_id>', methods=['POST'])
 @login_required
+@role_required('admin')
 def edit_course(course_id):
-    if current_user.role != 'admin':
-        flash('Unauthorized access', 'danger')
-        return redirect(url_for('admin.courses'))
     form = CourseForm()
     form.instructor_id.choices = get_instructor_choices()
     if form.validate_on_submit():
@@ -197,11 +177,8 @@ def edit_course(course_id):
 
 @admin.route('/dashboard/users/', methods=['GET', 'POST'])
 @login_required
-def users():
-    if current_user.role != 'admin':
-        flash('Unauthorized access.', 'danger')
-        return redirect(url_for('main.index'))
-    
+@role_required('admin')
+def users():    
     if request.method == 'POST':
         user_id = request.form.get('user_id')
         if user_id:
@@ -236,10 +213,8 @@ def users():
                           email=email, department_id=department_id or 0, role_name=role_name)
 @admin.route('/dashboard/users/add', methods=['POST'])
 @login_required
+@role_required('admin')
 def add_user():
-    if current_user.role != 'admin':
-        flash('Unauthorized access', 'danger')
-        return redirect(url_for('admin.users'))
     form = CreateUserForm()
     if form.validate_on_submit():
         username = form.username.data
@@ -262,10 +237,8 @@ def add_user():
 
 @admin.route('/dashboard/users/edit/<int:user_id>', methods=['POST'])
 @login_required
+@role_required('admin')
 def edit_user(user_id):
-    if current_user.role != 'admin':
-        flash('Unauthorized access', 'danger')
-        return redirect(url_for('admin.users'))
     form = UpdateUserForm()
     if form.validate_on_submit():
         username = form.username.data
