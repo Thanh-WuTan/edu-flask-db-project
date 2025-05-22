@@ -1,5 +1,5 @@
 ---
-title: Design Document
+title: COMP3030 - Final Summary Report
 authors:
   - name: Vu Ai Thanh
   - name: Truong Gia Bao
@@ -36,7 +36,7 @@ geometry:
   - heightrounded
 ---
 
-# Conceptual & Logical Design
+# Conceptual & Physical Design 
 
 The project is aimed to provide a yet minimal but still functional of a management application for a education institution. The main actors that interacts to the app contains: `Administrators`, `Instructors`, and `Students`. There activities will go around the `Courses` at school. 
 
@@ -114,65 +114,49 @@ The project is aimed to provide a yet minimal but still functional of a manageme
 + Proper use of foreign keys for references
 + Related data is properly normalized into separate tables
 
-# Physical Schema Definition 
+# Implement of DB Entities
 
-## Complete DDL scripts of all tables 
+## Database schema
 
 The full script is in our GitHub repository at this [link](https://github.com/Thanh-WuTan/edu-flask-db-project/blob/capacity/schema.sql).
 
-## Definitions of views, indexes, partitioning strategy 
-
-### Views
+## Views
 
 Currently, there is one view `view_course_details` in the database. It provides a simplified and denormalized view of course information with instructor details. This view joins `courses` and `users` tables to provide course information along with the instructor's name, making it easier to retrieve complete course information without writing complex joins in application queries. 
 
-### Indexes
+```sql
+CREATE VIEW view_course_details AS
+SELECT 
+    c.id AS course_id,
+    c.course_name,
+    c.department_id,
+    c.instructor_id,
+    u.username AS instructor_name,
+    c.location,
+    c.schedule,
+    c.semester,
+    c.availability
+FROM 
+    courses c
+    LEFT JOIN users u ON c.instructor_id = u.id;
+```
 
-The database schema defined several indexes on operations that are queried frequently during the application lifecycle.
+## Stored Procedures
 
-1. `idx_users_email` on users(email) - Improves login and user lookup operations
-2. `idx_users_role` on users(role) - Enhances queries filtering users by role type
-3. `idx_courses_instructor` on courses(instructor_id) - Optimizes searches for courses by instructor
-4. `idx_enrollments_student_course` on enrollments(student_id, course_id) - A composite index that improves enrollment lookups and enforces the unique constraint preventing duplicate enrollments
+There are 03 stored procedures within the database, which are used as quick refrence for most used queries within the lifecycle of the application: 
 
+| Stored Procedures                 | Purposes                                                                                                             |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `get_user_role_counts()`          | Collect number of users across roles within the databases, adaptive with future new roles.                           |
+| `get_course_department_counts()`  | Collect number of courses across departments, adaptive with future new departments & courses in the institute.       |
+| `get_student_department_counts()` | Collect number of students across departments, adaptive with future new departments, or changing numbers of students |
+| `get_course_count_by_semester()` | Filtering number of courses in each semesters | 
 
-# Task Division & Project Plan 
+## Triggers
 
-## Task Division 
+In the functionalities of the application, there are features that automatically update available slots in each course after enrollment. To efficiently operate this feature, we introduced two triggers:
 
-| Member          | Role                           | Detailed Description                                                                                                           |
-| --------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| Vu Ai Thanh     | Project Leader, Main Developer | + Design the database system & blueprints of the application<br>+ Implement core functions in administrator's role & analytics |
-| Truong Gia Bao  | Main Developer                 | + Implement core functions in students & instructor roles<br>+ Design UX/UI of the application                                 |
-| Nguyen Tuan Anh | Developer                      | + Refactoring minor issues on codebases<br>+ Documentation writer                                                              |
++ `before_enrollment_insert()`: This trigger is used to check if there are enough seats left in the course. Whenever a student registered a course, this trigger will reduce the available slots by one. When there is no seat available, it will raise an exception for the business logic to know and handle. 
++ `after_enrollment_delete()`: In several cases, student may want to drop the course. This trigger simply increase one seat for the course whenever a student unenroll it. 
 
-## Project Plan 
-
-The project spans from May 6 to May 26, 2025, with the following timeline:
-
-![Gantt Chart of the Project](./images/gantt.png)
-
-This timeline shows the major phases and tasks of the project, with overlapping periods where team members work in parallel on different components. The project is structured to begin with database design and core backend development, followed by frontend implementation, and concluding with thorough testing and documentation.
-
-# Supporting Documentation 
-
-## Design Rationale 
-
-### Tables 
-
-The project is centering around the normal operations of course enrollment in education institutes. Therefore, our database designs will involves three main actors: 
-
-+ Administrators: People who manage the main direction of courses in the institutes
-+ Instructors: People who are in charge of more micro levels: teach, and manage the classes. 
-+ Students: People who take the courses. 
-
-From these descriptions, we are adding `Courses` that are provided by the school, taught by instructors; as well as `Enrollments` to solve the involvement of students into the courses. There are several supporting tables such as `roles` and `departments` to provide the access control system in the business logic of the application, or to bring the application more realistic. 
-
-### Keys 
-
-As any other systems, all objects in our database is managed via their primary key (via ID of administrators, instructors, students, courses, etc.). With the enrollments of student, as it is a many-to-many relationship, we bridge them with one more table: `Enrollments`. The foreign keys referenced in the tables showing the relationship between the objects in the system: Each students & instructors are in departments of the institute, each students' courses must be managed by a department and an instructors, etc. 
-
-## Notes on data loading approaches 
-
-In the implementation, we are using random data to provide a quick test bench for the application. The data generate script is available at the project folder. In the future, the script can increase up the load for security & performance testing.
-
+Due to the atomic & synchronize features of MySQL, there are no race con
