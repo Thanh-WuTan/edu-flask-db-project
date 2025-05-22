@@ -1,48 +1,27 @@
+import bcrypt
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, current_user, login_required
 from app.role_required  import role_required
 from app.service.auth_service import authenticate_user
-from app.service.admin_service import (
-    get_instructor_choices, 
-    get_all_courses_service, delete_course_service, get_filtered_users_service, 
-    delete_user_service, add_user_service, edit_user_service, add_course_service, 
-    edit_course_service, get_course_details_service, get_user_role_counts_service, 
-    get_course_department_counts_service, get_student_department_counts_service, get_available_students_service, enroll_student_service, unenroll_student_service,
-    get_course_count_by_semester_service
-)
-from app.db.users import User
-from app.db.departments import get_all_departments
+from app.service.main_service import get_instructor_choices
+from app.db.departments import db_get_all_departments
+from app.db.users import User, db_delete_user, db_create_user, db_update_user, db_get_filtered_users
+from app.db.courses import db_get_filtered_courses, db_delete_course, db_create_course, db_update_course, db_get_course_view_by_id
+from app.db.enrollment import get_enrolled_students, get_available_students, db_enroll_student, db_unenroll_student
+from app.db.stored_procs import db_get_user_role_counts, db_get_course_department_counts, db_get_student_department_counts, db_get_course_count_by_semester
 from app.forms import CreateUserForm, UpdateUserForm, CourseForm
 
-admin = Blueprint('admin', __name__)
 
-@admin.route('/', methods=['GET', 'POST'])
-def admin_login():
-    if current_user.is_authenticated and current_user.role == 'admin':
-        return redirect(url_for('admin.dashboard'))
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        user, error = authenticate_user(email, password)
-        if user:
-            if user['role_name'] == 'admin':
-                login_user(User(user))
-                flash('Logged in successfully!', 'success')
-                return redirect(url_for('admin.dashboard'))
-            else:
-                flash('You do not have admin access.', 'danger')
-        else:
-            flash(error, 'danger')
-    return render_template('admin/login.html', title='Admin Login')
+admin = Blueprint('admin', __name__)
 
 @admin.route('/dashboard')
 @login_required
 @role_required('admin')
 def dashboard():    
-    user_role_counts = get_user_role_counts_service()
-    course_dept_counts = get_course_department_counts_service()
-    student_dept_counts = get_student_department_counts_service()
-    course_semester_counts = get_course_count_by_semester_service()
+    user_role_counts = db_get_user_role_counts()
+    course_dept_counts = db_get_course_department_counts()
+    student_dept_counts = db_get_student_department_counts()
+    course_semester_counts = db_get_course_count_by_semester()
 
     return render_template('admin/dashboard.html', title='Admin Dashboard', 
                           user_role_counts=user_role_counts, course_dept_counts=course_dept_counts, student_dept_counts=student_dept_counts, 
@@ -59,10 +38,10 @@ def courses():
     department_id = request.args.get('department_id', '')
     department_id = int(department_id) if department_id.isdigit() and int(department_id) > 0 else None
     schedule = request.args.get('schedule', '')
-    department_names = get_all_departments()
+    department_names = db_get_all_departments()
 
     # Fetch courses with filters
-    courses, total = get_all_courses_service(page=page, per_page=per_page, search_query=search_query, department_id=department_id, schedule=schedule)
+    courses, total = db_get_filtered_courses(search_query=search_query, department_id=department_id, schedule=schedule, page=page, per_page=per_page)
     total_pages = (total + per_page - 1) // per_page
 
     # Populate instructor choices dynamically
@@ -77,7 +56,7 @@ def courses():
 @role_required('admin')
 def delete_course(course_id):
     try:
-        delete_course_service(course_id)
+        db_delete_course(course_id)
         flash('Course deleted successfully!', 'success')
     except Exception as e:
         flash(f'Error deleting course: {str(e)}', 'danger')
@@ -87,8 +66,9 @@ def delete_course(course_id):
 @login_required
 @role_required('admin')
 def course_detail(course_id):    
-    course, enrolled_students = get_course_details_service(course_id)
-    available_students = get_available_students_service(course_id)
+    course = db_get_course_view_by_id(course_id)
+    enrolled_students = get_enrolled_students(course_id)
+    available_students = get_available_students(course_id)
 
     if not course:
         flash('Course not found.', 'danger')
@@ -105,7 +85,7 @@ def enroll_student(course_id):
     student_id = request.form.get('student_id')
     if student_id:
         try:
-            enroll_student_service(int(student_id), course_id)
+            db_enroll_student(int(student_id), course_id)
             flash('Student enrolled successfully!', 'success')
         except Exception as e:
             flash(f'Error enrolling student: {str(e)}', 'danger')
@@ -117,7 +97,7 @@ def enroll_student(course_id):
 @role_required('admin')
 def unenroll_student(course_id, student_id):
     try:
-        unenroll_student_service(student_id, course_id)
+        db_unenroll_student(student_id, course_id)
     except Exception as e:
         flash(f'Error unenrolling student: {str(e)}', 'danger')
     return redirect(url_for('admin.course_detail', course_id=course_id))
@@ -137,7 +117,7 @@ def add_course():
         semester = form.semester.data
         availability = form.availability.data
         try:
-            add_course_service(course_name, department_id, instructor_id, location, schedule, semester, availability)
+            db_create_course(course_name, department_id, instructor_id, location, schedule, semester, availability)
             flash('Course added successfully', 'success')
             return redirect(url_for('admin.courses'))
         except Exception as e:
@@ -161,8 +141,9 @@ def edit_course(course_id):
         location = form.location.data
         schedule = form.schedule.data
         semester = form.semester.data
+        availability = form.availability.data
         try:
-            edit_course_service(course_id, course_name, department_id, instructor_id, location, schedule, semester)
+            db_update_course(course_id, course_name, department_id, instructor_id, location, schedule, semester, availability)
             flash('Course updated successfully', 'success')
             return redirect(url_for('admin.courses'))
         except Exception as e:
@@ -183,7 +164,7 @@ def users():
         user_id = request.form.get('user_id')
         if user_id:
             try:
-                delete_user_service(user_id)
+                db_delete_user(user_id)
                 flash('User deleted successfully!', 'success')
             except Exception as e:
                 flash(f'Error deleting user: {str(e)}', 'danger')
@@ -196,9 +177,9 @@ def users():
     department_id = request.args.get('department_id', '')
     department_id = int(department_id) if department_id.isdigit() and int(department_id) > 0 else None
     role_name = request.args.get('role_name', '')
-    department_names = get_all_departments()
+    department_names = db_get_all_departments()
     # Fetch filtered users
-    users, total = get_filtered_users_service(email, department_id, role_name, page, per_page)
+    users, total = db_get_filtered_users(email, department_id, role_name, page, per_page)
     
     # Calculate pagination details
     total_pages = (total + per_page - 1) // per_page
@@ -211,6 +192,7 @@ def users():
                           create_form=create_form, update_form=update_form, 
                           page=page, total_pages=total_pages, 
                           email=email, department_id=department_id or 0, role_name=role_name)
+
 @admin.route('/dashboard/users/add', methods=['POST'])
 @login_required
 @role_required('admin')
@@ -224,7 +206,9 @@ def add_user():
         phone = form.phone.data
         department_id = form.department_id.data
         try:
-            add_user_service(email, username, password, role, phone, department_id)
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            db_create_user(email, username, hashed_password, role, phone, department_id)
+
             flash('User added successfully', 'success')
             return redirect(url_for('admin.users'))
         except Exception as e:
@@ -247,7 +231,7 @@ def edit_user(user_id):
         phone = form.phone.data
         department_id = form.department_id.data
         try:
-            edit_user_service(user_id, username, email, role, phone, department_id)
+            db_update_user(user_id, username, email, role, phone, department_id)
             flash('User updated successfully', 'success')
             return redirect(url_for('admin.users'))
         except Exception as e:

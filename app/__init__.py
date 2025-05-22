@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_login import LoginManager
 from app.config import Config
-from app.db.users import get_user_by_id, User, get_user_by_email, create_user
+from app.db.users import db_get_user_by_id, User, db_get_user_by_email, db_create_user
 import bcrypt
 
 def create_app():
@@ -19,7 +19,7 @@ def create_app():
     # User loader callback for Flask-Login
     @login_manager.user_loader
     def load_user(user_id):
-        user = get_user_by_id(user_id)
+        user = db_get_user_by_id(user_id)
         if user:
             return User(user)
         return None
@@ -45,11 +45,11 @@ def create_app():
     
     if default_admin_email and default_admin_username and default_admin_password:
         # Check if the admin user already exists
-        existing_user = get_user_by_email(default_admin_email)
+        existing_user = db_get_user_by_email(default_admin_email)
         if not existing_user:
             # Create the admin user
             # print("Creating default admin user...")
-            create_user(
+            db_create_user(
                 email=default_admin_email,
                 username=default_admin_username,
                 password=bcrypt.hashpw(default_admin_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
