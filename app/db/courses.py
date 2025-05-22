@@ -56,8 +56,8 @@ def db_get_filtered_courses(search_query=None, department_id=None, schedule=None
             count_query += " AND c.department_id = %s"
             count_params.append(department_id)
         if schedule:
-            count_query += " AND c.schedule = %s"
-            count_params.append(schedule)
+            count_query += " AND c.schedule LIKE %s"
+            count_params.append(f"%{schedule}%")
         if instructor_id:
             count_query += " AND c.instructor_id = %s"
             count_params.append(instructor_id)
