@@ -1,8 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_user, current_user, login_required
+from flask import Blueprint, render_template, redirect, url_for, flash
+from flask_login import current_user, login_required
 from app.role_required import role_required
-from app.service.auth_service import authenticate_user
-from app.db.users import User
 from app.db.enrollment import get_enrolled_students, get_available_students
 from app.db.courses import db_get_course_view_by_id, db_get_course_by_student_id
 

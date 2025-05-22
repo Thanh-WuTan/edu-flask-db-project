@@ -1,11 +1,10 @@
 import bcrypt
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_user, current_user, login_required
+from flask_login import login_required
 from app.role_required  import role_required
-from app.service.auth_service import authenticate_user
 from app.service.main_service import get_instructor_choices
 from app.db.departments import db_get_all_departments
-from app.db.users import User, db_delete_user, db_create_user, db_update_user, db_get_filtered_users
+from app.db.users import db_delete_user, db_create_user, db_update_user, db_get_filtered_users
 from app.db.courses import db_get_filtered_courses, db_delete_course, db_create_course, db_update_course, db_get_course_view_by_id
 from app.db.enrollment import get_enrolled_students, get_available_students, db_enroll_student, db_unenroll_student
 from app.db.stored_procs import db_get_user_role_counts, db_get_course_department_counts, db_get_student_department_counts, db_get_course_count_by_semester
