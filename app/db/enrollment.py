@@ -2,7 +2,7 @@ from .connector import get_db_connection
 from mysql.connector import Error
  
     
-def get_enrolled_students(course_id):
+def db_get_enrolled_students(course_id):
     connection = get_db_connection()
     if connection is None:
         return []
@@ -25,7 +25,7 @@ def get_enrolled_students(course_id):
         cursor.close()
         connection.close()
 
-def get_available_students(course_id):
+def db_get_available_students(course_id):
     connection = get_db_connection()
     if connection is None:
         return []

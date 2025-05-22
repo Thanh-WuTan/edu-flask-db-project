@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 from app.role_required import role_required
 from app.service.main_service import get_department_options, get_schedule_options
 from app.db.courses import db_get_filtered_courses, db_get_course_view_by_id
-from app.db.enrollment import get_enrolled_students, db_enroll_student, db_unenroll_student
+from app.db.enrollment import db_get_enrolled_students, db_enroll_student, db_unenroll_student
 main = Blueprint('main', __name__)
 
 @main.route('/')
@@ -51,7 +51,7 @@ def courses():
 @login_required
 def course_detail(course_id):
     course = db_get_course_view_by_id(course_id)
-    enrolled_students = get_enrolled_students(course_id)
+    enrolled_students = db_get_enrolled_students(course_id)
     if not course:
         flash('Course not found.', 'danger')
         return redirect(url_for('main.index'))
