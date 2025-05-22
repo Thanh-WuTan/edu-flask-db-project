@@ -2,7 +2,7 @@ import bcrypt
 from app.db.users import get_all_users, delete_user, create_user, update_user
 from app.db.courses import get_filtered_courses, delete_course, create_course, update_course, get_course_view_by_id
 from app.db.enrollment import get_enrolled_students, get_available_students, enroll_student, unenroll_student
-from app.db.stored_procs import db_get_user_role_counts, db_get_course_department_counts, db_get_student_department_counts
+from app.db.stored_procs import db_get_user_role_counts, db_get_course_department_counts, db_get_student_department_counts, db_get_course_count_by_semester
 
 def get_all_courses_service(page=1, per_page=10, search_query=None):
     courses, total = get_filtered_courses(search_query=search_query, page=page, per_page=per_page)
@@ -51,6 +51,9 @@ def get_course_department_counts_service():
 
 def get_student_department_counts_service():
     return db_get_student_department_counts()
+
+def get_course_count_by_semester_service():
+    return db_get_course_count_by_semester()
 
 def get_available_students_service(course_id):
     return get_available_students(course_id)

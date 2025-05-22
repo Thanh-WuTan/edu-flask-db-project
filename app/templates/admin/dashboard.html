@@ -62,6 +62,18 @@
             </div>
         </div>
     </div>
+
+    <!-- Courses Over Time Chart -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Number of Courses Over Time</h5>
+                    <canvas id="courseSemesterChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Chart.js Script -->
@@ -148,6 +160,58 @@
             plugins: {
                 legend: {
                     position: 'bottom',
+                    labels: {
+                        color: '#2C3E50'
+                    }
+                }
+            }
+        }
+    });
+
+    // Courses Over Time Chart (Changed to Bar Chart)
+    const courseSemesterCtx = document.getElementById('courseSemesterChart').getContext('2d');
+    const courseSemesterData = {
+        labels: [{% for semester in course_semester_counts %}'{{ semester[0] }}'{% if not loop.last %},{% endif %}{% endfor %}],
+        datasets: [{
+            label: 'Number of Courses',
+            data: [{% for semester in course_semester_counts %}{{ semester[1] }}{% if not loop.last %},{% endif %}{% endfor %}],
+            backgroundColor: '#36A2EB',
+            borderColor: '#2C3E50',
+            borderWidth: 1
+        }]
+    };
+    new Chart(courseSemesterCtx, {
+        type: 'bar',
+        data: courseSemesterData,
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Semester',
+                        color: '#2C3E50'
+                    },
+                    ticks: {
+                        color: '#2C3E50'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Number of Courses',
+                        color: '#2C3E50'
+                    },
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        color: '#2C3E50'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
                     labels: {
                         color: '#2C3E50'
                     }

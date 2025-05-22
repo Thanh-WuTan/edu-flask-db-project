@@ -25,7 +25,10 @@ COURSE_NAMES = [
     "Cybersecurity", "Mobile App Development", "DevOps", "Big Data"
 ]
 LOCATIONS = ["Room 101", "Room 102", "Room 103", "Room 104", "Room 105", "Online"]
-SEMESTERS = ["Fall 2025", "Spring 2026", "Summer 2026"]
+# Generate semesters from 2019 to 2040
+SEASONS = ["Spring", "Summer", "Fall"]
+SEMESTERS = [f"{season} {year}" for year in range(2019, 2041) for season in SEASONS]
+
 
 # Schedule combinations (M, T, W, R, F only)
 SCHEDULES = ["M", "T", "W", "R", "F", "MW", "TR", "MF", "TW", "MTR"]
@@ -103,7 +106,7 @@ def generate_test_data():
             print(f"Failed to create instructor: {username}")
 
     # Create 100 random courses
-    for _ in range(10):
+    for _ in range(1000):
         course_name = random.choice(COURSE_NAMES)
         department_id = random.randint(1, 5)  # Departments 1-5
         instructor_id = random.choice(instructors) if instructors else None

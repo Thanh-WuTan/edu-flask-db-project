@@ -5,7 +5,9 @@ from app.service.admin_service import (
     get_all_courses_service, delete_course_service, get_all_users_service, 
     delete_user_service, add_user_service, edit_user_service, add_course_service, 
     edit_course_service, get_course_details_service, get_user_role_counts_service, 
-    get_course_department_counts_service, get_student_department_counts_service, get_available_students_service, enroll_student_service, unenroll_student_service
+    get_course_department_counts_service, get_student_department_counts_service, get_available_students_service, enroll_student_service, unenroll_student_service, 
+    get_course_count_by_semester_service
+
 )
 from app.db.users import User, get_all_users
 from app.db.connector import get_db_connection
@@ -42,9 +44,11 @@ def dashboard():
     user_role_counts = get_user_role_counts_service()
     course_dept_counts = get_course_department_counts_service()
     student_dept_counts = get_student_department_counts_service()
+    course_semester_counts = get_course_count_by_semester_service()
 
     return render_template('admin/dashboard.html', title='Admin Dashboard', 
-                          user_role_counts=user_role_counts, course_dept_counts=course_dept_counts, student_dept_counts=student_dept_counts)
+                          user_role_counts=user_role_counts, course_dept_counts=course_dept_counts, 
+                          student_dept_counts=student_dept_counts, course_semester_counts=course_semester_counts)
 
 @admin.route('/dashboard/courses/', methods=['GET', 'POST'])
 @login_required

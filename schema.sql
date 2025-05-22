@@ -119,6 +119,27 @@ END //
 DELIMITER ;
 
 
+-- New stored procedure to get course counts by semester
+DELIMITER //
+CREATE PROCEDURE get_course_count_by_semester()
+BEGIN
+    SELECT 
+        semester,
+        COUNT(*) as count
+    FROM courses
+    WHERE semester IS NOT NULL
+    GROUP BY semester
+    ORDER BY 
+        SUBSTRING(semester, INSTR(semester, ' ') + 1) ASC, -- Extract year
+        CASE 
+            WHEN SUBSTRING(semester, 1, INSTR(semester, ' ') - 1) = 'Spring' THEN 1
+            WHEN SUBSTRING(semester, 1, INSTR(semester, ' ') - 1) = 'Summer' THEN 2
+            WHEN SUBSTRING(semester, 1, INSTR(semester, ' ') - 1) = 'Fall' THEN 3
+        END ASC;
+END //
+
+DELIMITER ;
+
 -- Trigger to increase course availability on unenrollment
 DELIMITER //
 CREATE TRIGGER after_enrollment_delete
