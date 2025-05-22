@@ -48,3 +48,15 @@ def db_get_student_department_counts():
     finally:
         cursor.close()
         connection.close()
+
+def db_get_course_count_by_semester():
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            cursor.callproc('get_course_count_by_semester')
+            result = []
+            for result_set in cursor.stored_results():
+                result = result_set.fetchall()
+            return result
+    finally:
+        connection.close()
