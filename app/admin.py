@@ -46,21 +46,12 @@ def dashboard():
     return render_template('admin/dashboard.html', title='Admin Dashboard', 
                           user_role_counts=user_role_counts, course_dept_counts=course_dept_counts, student_dept_counts=student_dept_counts)
 
-@admin.route('/dashboard/courses/', methods=['GET', 'POST'])
+@admin.route('/dashboard/courses/')
 @login_required
 def courses():
     if current_user.role != 'admin':
         flash('Unauthorized access.', 'danger')
         return redirect(url_for('main.index'))
-    if request.method == 'POST':
-        course_id = request.form.get('course_id')
-        if course_id:
-            try:
-                delete_course_service(course_id)
-                flash('Course deleted successfully!', 'success')
-            except Exception as e:
-                flash(f'Error deleting course: {str(e)}', 'danger')
-            return redirect(url_for('admin.courses'))
     
     # Pagination and search parameters
     page = int(request.args.get('page', 1))
@@ -78,6 +69,19 @@ def courses():
     course_form.instructor_id.choices = instructors 
     return render_template('admin/courses.html', title='Courses Dashboard', courses=courses, 
                           course_form=course_form, page=page, total_pages=total_pages)
+
+@admin.route('/dashboard/courses/delete/<int:course_id>', methods=['POST'])
+@login_required
+def delete_course(course_id):
+    if current_user.role != 'admin':
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('admin.courses'))
+    try:
+        delete_course_service(course_id)
+        flash('Course deleted successfully!', 'success')
+    except Exception as e:
+        flash(f'Error deleting course: {str(e)}', 'danger')
+    return redirect(url_for('admin.courses'))
 
 @admin.route('/dashboard/courses/<int:course_id>')
 @login_required

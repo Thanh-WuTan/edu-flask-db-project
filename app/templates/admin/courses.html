@@ -38,7 +38,7 @@
         </thead>
         <tbody>
             {% for course in courses %}
-            <tr onclick="window.location.href='{{ url_for('admin.course_detail', course_id=course.id) }}'" style="cursor: pointer;">
+            <tr onclick="window.location.href='{{ url_for('admin.delete_course', course_id=course.id) }}'" style="cursor: pointer;">
                 <td>{{ course.id }}</td>
                 <td>{{ course.course_name }}</td>
                 <td>{{ course.department_name }}</td>
@@ -49,7 +49,7 @@
                 <td>{{ course.availability|default('-', true) }}</td>
                 <td onclick="event.stopPropagation();">
                     <button type="button" class="btn btn-sm" style="background-color: #2C3E50; color: #ECF0F1;" data-bs-toggle="modal" data-bs-target="#editCourseModal{{ course.id }}">Edit</button>
-                    <form method="POST" style="display:inline;">
+                    <form method="POST" action="{{ url_for('admin.delete_course', course_id=course.id) }}" style="display:inline;">
                         <input type="hidden" name="course_id" value="{{ course.id }}">
                         <button type="submit" class="btn btn-sm" style="background-color: #C0392B; color: #ECF0F1;" onclick="return confirm('Are you sure you want to delete this course?')">Delete</button>
                     </form>
