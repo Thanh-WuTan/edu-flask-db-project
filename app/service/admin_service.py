@@ -8,8 +8,8 @@ def get_instructor_choices():
     users = get_all_users()
     return [(user['id'], user['username']) for user in users if user['role_name'] == 'instructor']
 
-def get_all_courses_service(page=1, per_page=10, search_query=None):
-    courses, total = get_filtered_courses(search_query=search_query, page=page, per_page=per_page)
+def get_all_courses_service(page=1, per_page=10, search_query=None, department_id=None, schedule=None):
+    courses, total = get_filtered_courses(search_query=search_query, department_id=department_id, schedule=schedule, page=page, per_page=per_page)
     return courses, total
 
 def delete_course_service(course_id):

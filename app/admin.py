@@ -58,17 +58,21 @@ def courses():
     page = int(request.args.get('page', 1))
     per_page = 10
     search_query = request.args.get('search', '').strip()
-    
-    # Fetch courses with search filter
-    courses, total = get_all_courses_service(page=page, per_page=per_page, search_query=search_query)
+    department_id = request.args.get('department_id', '')
+    department_id = int(department_id) if department_id.isdigit() and int(department_id) > 0 else None
+    schedule = request.args.get('schedule', '')
+    department_names = get_all_departments()
+
+    # Fetch courses with filters
+    courses, total = get_all_courses_service(page=page, per_page=per_page, search_query=search_query, department_id=department_id, schedule=schedule)
     total_pages = (total + per_page - 1) // per_page
 
     # Populate instructor choices dynamically
-    
     course_form = CourseForm()
     course_form.instructor_id.choices = get_instructor_choices()
     return render_template('admin/courses.html', title='Courses Dashboard', courses=courses, 
-                          course_form=course_form, page=page, total_pages=total_pages)
+                          course_form=course_form, page=page, total_pages=total_pages,
+                          department_names=department_names, department_id=department_id or 0, schedule=schedule)
 
 @admin.route('/dashboard/courses/delete/<int:course_id>', methods=['POST'])
 @login_required
