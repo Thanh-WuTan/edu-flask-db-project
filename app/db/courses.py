@@ -19,7 +19,7 @@ class Course:
         self.department_name = dept_name.get(data[2], "Unknown")
         self.availability = data[7]
     
-def get_filtered_courses(search_query=None, department_id=None, schedule=None, instructor_id=None, page=1, per_page=10):
+def db_get_filtered_courses(search_query=None, department_id=None, schedule=None, instructor_id=None, page=1, per_page=10):
     connection = get_db_connection()
     if connection is None:
         return [], 0
@@ -79,7 +79,7 @@ def get_filtered_courses(search_query=None, department_id=None, schedule=None, i
         cursor.close()
         connection.close()
 
-def create_course(course_name, department_id, instructor_id, location, schedule, semester, availability):
+def db_create_course(course_name, department_id, instructor_id, location, schedule, semester, availability):
     connection = get_db_connection()
     if connection is None:
         raise Exception("Failed to connect to database")
@@ -97,7 +97,7 @@ def create_course(course_name, department_id, instructor_id, location, schedule,
         cursor.close()
         connection.close()
 
-def update_course(course_id, course_name, department_id, instructor_id, location, schedule, semester, availability):
+def db_update_course(course_id, course_name, department_id, instructor_id, location, schedule, semester, availability):
     connection = get_db_connection()
     if connection is None:
         raise Exception("Failed to connect to database")
@@ -115,7 +115,7 @@ def update_course(course_id, course_name, department_id, instructor_id, location
         cursor.close()
         connection.close()
 
-def delete_course(course_id):
+def db_delete_course(course_id):
     connection = get_db_connection()
     if connection is None:
         raise Exception("Failed to connect to database")
@@ -173,7 +173,7 @@ def db_get_course_by_student_id(student_id):
         cursor.close()
         connection.close()
 
-def get_course_view_by_id(course_id):
+def db_get_course_view_by_id(course_id):
     connection = get_db_connection()
     if connection is None:
         return None

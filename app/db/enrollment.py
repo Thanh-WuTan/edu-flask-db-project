@@ -48,7 +48,7 @@ def get_available_students(course_id):
         cursor.close()
         connection.close()
 
-def enroll_student(student_id, course_id):
+def db_enroll_student(student_id, course_id):
     connection = get_db_connection()
     if connection is None:
         raise Exception("Failed to connect to database")
@@ -66,7 +66,7 @@ def enroll_student(student_id, course_id):
         cursor.close()
         connection.close()
 
-def unenroll_student(student_id, course_id):
+def db_unenroll_student(student_id, course_id):
     connection = get_db_connection()
     if connection is None:
         raise Exception("Failed to connect to database")

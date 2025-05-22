@@ -19,7 +19,7 @@ class User:
     def get_id(self):
         return str(self.id)
 
-def create_user(email, username, password, role_name, phone=None, department_id=5):
+def db_create_user(email, username, password, role_name, phone=None, department_id=5):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT id FROM roles WHERE role_name = %s", (role_name,))
@@ -34,7 +34,7 @@ def create_user(email, username, password, role_name, phone=None, department_id=
     conn.close()
     return user_id
 
-def update_user(user_id, username, email, role_name, phone, department_id):
+def db_update_user(user_id, username, email, role_name, phone, department_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT id FROM roles WHERE role_name = %s", (role_name,))
@@ -47,7 +47,7 @@ def update_user(user_id, username, email, role_name, phone, department_id):
     cursor.close()
     conn.close()
 
-def get_user_by_email(email):
+def db_get_user_by_email(email):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT u.*, r.role_name FROM users u JOIN roles r ON u.role = r.id WHERE u.email = %s", (email,))
@@ -56,7 +56,7 @@ def get_user_by_email(email):
     conn.close()
     return user
 
-def get_user_by_id(user_id):
+def db_get_user_by_id(user_id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT u.*, r.role_name FROM users u JOIN roles r ON u.role = r.id WHERE u.id = %s", (user_id,))
@@ -65,7 +65,7 @@ def get_user_by_id(user_id):
     conn.close()
     return user
 
-def get_all_users():
+def db_get_all_users():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT u.*, r.role_name FROM users u JOIN roles r ON u.role = r.id")
@@ -74,7 +74,7 @@ def get_all_users():
     conn.close()
     return users
 
-def delete_user(user_id):
+def db_delete_user(user_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
@@ -82,7 +82,7 @@ def delete_user(user_id):
     cursor.close()
     conn.close()
 
-def get_filtered_users(email=None, department_id=None, role_name=None, page=1, per_page=10):
+def db_get_filtered_users(email=None, department_id=None, role_name=None, page=1, per_page=10):
     connection = get_db_connection()
     if connection is None:
         return [], 0
