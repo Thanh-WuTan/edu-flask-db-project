@@ -10,6 +10,36 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
+
+    <!-- Search Form -->
+    <div class="mb-3">
+        <form method="GET" class="row g-3">
+            <div class="col-auto">
+                <input type="text" class="form-control" name="email" placeholder="Search by Email" value="{{ email }}">
+            </div>
+            <div class="col-auto">
+                <select class="form-select" name="department_id">
+                    <option value="">All Departments</option>
+                    {% for dept in department_names %}
+                        <option value="{{ dept[0] }}"> {{ dept[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <select class="form-select" name="role_name">
+                    <option value="">All Roles</option>
+                    <option value="admin" {% if role_name == 'admin' %}selected{% endif %}>admin</option>
+                    <option value="student" {% if role_name == 'student' %}selected{% endif %}>student</option>
+                    <option value="instructor" {% if role_name == 'instructor' %}selected{% endif %}>instructor</option>
+                    <option value="guest" {% if role_name == 'guest' %}selected{% endif %}>guest</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Search</button>
+            </div>
+        </form>
+    </div>
+
     <div class="mb-3">
         <button type="button" class="btn" style="background-color: #27AE60; color: #ECF0F1;" data-bs-toggle="modal" data-bs-target="#addUserModal">Add User</button>
     </div>
@@ -21,7 +51,7 @@
                 <th>Email</th>
                 <th>Role</th>
                 <th>Phone</th>
-                <th>Department ID</th>
+                <th>Department</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -33,7 +63,7 @@
                 <td>{{ user.email }}</td>
                 <td>{{ user.role_name }}</td>
                 <td>{{ user.phone or '-' }}</td>
-                <td>{{ user.department_id }}</td>
+                <td>{{ user.department_name }}</td>
                 <td>
                     <button type="button" class="btn btn-sm" style="background-color: #2C3E50; color: #ECF0F1;" data-bs-toggle="modal" data-bs-target="#editUserModal{{ user.id }}">Edit</button>
                     <form method="POST" style="display:inline;">
@@ -90,6 +120,23 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('admin.users', page=page-1, email=email, department_id=department_id, role_name=role_name) }}" tabindex="-1">Previous</a>
+            </li>
+            {% for p in range(1, total_pages + 1) %}
+                <li class="page-item {% if p == page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('admin.users', page=p, email=email, department_id=department_id, role_name=role_name) }}">{{ p }}</a>
+                </li>
+            {% endfor %}
+            <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('admin.users', page=page+1, email=email, department_id=department_id, role_name=role_name) }}">Next</a>
+            </li>
+        </ul>
+    </nav>
 
     <!-- Add User Modal -->
     <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">

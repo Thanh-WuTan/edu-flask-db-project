@@ -11,11 +11,33 @@
         {% endif %}
     {% endwith %}
 
-    <!-- Search Form -->
+    <!-- Search Form with Department and Schedule Filters -->
     <div class="mb-3">
-        <form method="GET" action="{{ url_for('admin.courses') }}" class="d-flex">
-            <input type="text" class="form-control me-2" name="search" placeholder="Search by course name" value="{{ request.args.get('search', '') }}">
-            <button type="submit" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Search</button>
+        <form method="GET" action="{{ url_for('admin.courses') }}" class="row g-3">
+            <div class="col-auto">
+                <input type="text" class="form-control" name="search" placeholder="Search by course name" value="{{ request.args.get('search', '') }}">
+            </div>
+            <div class="col-auto">
+                <select class="form-select" name="department_id">
+                    <option value="">All Departments</option>
+                    {% for dept in department_names %}
+                        <option value="{{ dept[0] }}" {% if dept.id == department_id %}selected{% endif %}>{{ dept[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <select class="form-select" name="schedule">
+                    <option value="">All Schedules</option>
+                    <option value="M" {% if schedule == 'M' %}selected{% endif %}>Monday</option>
+                    <option value="T" {% if schedule == 'T' %}selected{% endif %}>Tuesday</option>
+                    <option value="W" {% if schedule == 'W' %}selected{% endif %}>Wednesday</option>
+                    <option value="R" {% if schedule == 'R' %}selected{% endif %}>Thursday</option>
+                    <option value="F" {% if schedule == 'F' %}selected{% endif %}>Friday</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn" style="background-color: #2C3E50; color: #ECF0F1;">Search</button>
+            </div>
         </form>
     </div>
 
@@ -27,7 +49,7 @@
             <tr>
                 <th>ID</th>
                 <th>Course Name</th>
-                <th>Department ID</th>
+                <th>Department</th>
                 <th>Instructor ID</th>
                 <th>Location</th>
                 <th>Schedule</th>
@@ -41,7 +63,7 @@
             <tr onclick="window.location.href='{{ url_for('admin.course_detail', course_id=course.id) }}'" style="cursor: pointer;">
                 <td>{{ course.id }}</td>
                 <td>{{ course.course_name }}</td>
-                <td>{{ course.department_id }}</td>
+                <td>{{ course.department_name }}</td>
                 <td>{{ course.instructor_id|default('-', true) }}</td>
                 <td>{{ course.location|default('-', true) }}</td>
                 <td>{{ course.schedule|default('-', true) }}</td>
@@ -49,7 +71,7 @@
                 <td>{{ course.availability|default('-', true) }}</td>
                 <td onclick="event.stopPropagation();">
                     <button type="button" class="btn btn-sm" style="background-color: #2C3E50; color: #ECF0F1;" data-bs-toggle="modal" data-bs-target="#editCourseModal{{ course.id }}">Edit</button>
-                    <form method="POST" style="display:inline;">
+                    <form method="POST" action="{{ url_for('admin.delete_course', course_id=course.id) }}" style="display:inline;">
                         <input type="hidden" name="course_id" value="{{ course.id }}">
                         <button type="submit" class="btn btn-sm" style="background-color: #C0392B; color: #ECF0F1;" onclick="return confirm('Are you sure you want to delete this course?')">Delete</button>
                     </form>
@@ -116,15 +138,15 @@
     <nav aria-label="Page navigation">
         <ul class="pagination">
             <li class="page-item {% if page == 1 %}disabled{% endif %}">
-                <a class="page-link" href="{{ url_for('admin.courses', page=page-1, search=request.args.get('search', '')) if page > 1 else '#' }}">Previous</a>
+                <a class="page-link" href="{{ url_for('admin.courses', page=page-1, search=request.args.get('search', ''), department_id=department_id, schedule=schedule) if page > 1 else '#' }}">Previous</a>
             </li>
             {% for p in range(1, total_pages + 1) %}
             <li class="page-item {% if p == page %}active{% endif %}">
-                <a class="page-link" href="{{ url_for('admin.courses', page=p, search=request.args.get('search', '')) }}">{{ p }}</a>
+                <a class="page-link" href="{{ url_for('admin.courses', page=p, search=request.args.get('search', ''), department_id=department_id, schedule=schedule) }}">{{ p }}</a>
             </li>
             {% endfor %}
             <li class="page-item {% if page == total_pages %}disabled{% endif %}">
-                <a class="page-link" href="{{ url_for('admin.courses', page=page+1, search=request.args.get('search', '')) if page < total_pages else '#' }}">Next</a>
+                <a class="page-link" href="{{ url_for('admin.courses', page=page+1, search=request.args.get('search', ''), department_id=department_id, schedule=schedule) if page < total_pages else '#' }}">Next</a>
             </li>
         </ul>
     </nav>
