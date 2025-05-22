@@ -52,7 +52,7 @@ class CourseForm(FlaskForm):
             raise ValidationError('Semester must be in the format "Spring/Fall/Summer YYYY".')
 
     def validate_schedule(self, field):
-        pattern = r'^(M|T|W|TH|F|S|SU)(,\s*(M|T|W|TH|F|S|SU))*$'
+        pattern = r'^(M|T|W|R|F|S|SU)(,\s*(M|T|W|R|F|S|SU))*$'
         if field.data and not re.match(pattern, field.data.strip()):
             raise ValidationError('Schedule must be comma-separated codes like "M, W, F" (M=Mon, T=Tue, etc.).')
 
@@ -68,6 +68,6 @@ class CourseInstructorForm(FlaskForm):
             raise ValidationError('Semester must be in the format "Spring/Fall/Summer YYYY".')
 
     def validate_schedule(self, field):
-        pattern = r'^(M|T|W|TH|F|S|SU)(,\s*(M|T|W|TH|F|S|SU))*$'
+        pattern = r'^(M|T|W|R|F|S|SU)(,\s*(M|T|W|R|F|S|SU))*$'
         if field.data and not re.match(pattern, field.data.strip()):
             raise ValidationError('Schedule must be comma-separated codes like "M, W, F" (M=Mon, T=Tue, etc.).')
