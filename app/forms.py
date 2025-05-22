@@ -49,7 +49,7 @@ class CourseForm(FlaskForm):
     def validate_semester(self, field):
         pattern = r'^(Spring|Fall|Summer) \d{4}$'
         if field.data and not re.match(pattern, field.data.strip()):
-            raise ValidationError('Semester must be in the format "Spring/Fall/Summer 2024".')
+            raise ValidationError('Semester must be in the format "Spring/Fall/Summer YYYY".')
 
     def validate_schedule(self, field):
         pattern = r'^(M|T|W|TH|F|S|SU)(,\s*(M|T|W|TH|F|S|SU))*$'
@@ -65,7 +65,7 @@ class CourseInstructorForm(FlaskForm):
     def validate_semester(self, field):
         pattern = r'^(Spring|Fall|Summer) \d{4}$'
         if field.data and not re.match(pattern, field.data.strip()):
-            raise ValidationError('Semester must be in the format "Spring/Fall/Summer 2024".')
+            raise ValidationError('Semester must be in the format "Spring/Fall/Summer YYYY".')
 
     def validate_schedule(self, field):
         pattern = r'^(M|T|W|TH|F|S|SU)(,\s*(M|T|W|TH|F|S|SU))*$'
