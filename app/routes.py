@@ -20,7 +20,12 @@ def index():
     return render_template('index.html', title='Home')
 
 @main.route('/courses/')
+@login_required
 def courses():
+    # Check if user is a guest
+    if current_user.is_authenticated and current_user.role == 'guest':
+        flash('Guests are not authorized to view courses.', 'danger')
+        return redirect(url_for('main.index'))
 
     # Get query parameters
     page = int(request.args.get('page', 1))
