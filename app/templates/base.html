@@ -41,19 +41,6 @@
                         </li>
                     {% endif %}
                     {% if current_user.is_authenticated %}
-                        {% if current_user.role == 'admin' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Admin Dashboard</a>
-                            </li>
-                        {% elif current_user.role == 'student' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('student.dashboard') }}">Student Dashboard</a>
-                            </li>
-                        {% elif current_user.role == 'instructor' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('instructor.dashboard') }}">Instructor Dashboard</a>
-                            </li>
-                        {% endif %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
                         </li>
