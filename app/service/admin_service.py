@@ -4,6 +4,10 @@ from app.db.courses import get_filtered_courses, delete_course, create_course, u
 from app.db.enrollment import get_enrolled_students, get_available_students, enroll_student, unenroll_student
 from app.db.stored_procs import db_get_user_role_counts, db_get_course_department_counts, db_get_student_department_counts
 
+def get_instructor_choices():
+    users = get_all_users()
+    return [(user['id'], user['username']) for user in users if user['role_name'] == 'instructor']
+
 def get_all_courses_service(page=1, per_page=10, search_query=None):
     courses, total = get_filtered_courses(search_query=search_query, page=page, per_page=per_page)
     return courses, total

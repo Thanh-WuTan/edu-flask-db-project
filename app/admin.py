@@ -2,12 +2,13 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, current_user, login_required
 from app.service.auth_service import authenticate_user
 from app.service.admin_service import (
+    get_instructor_choices,
     get_all_courses_service, delete_course_service, get_filtered_users_service, 
     delete_user_service, add_user_service, edit_user_service, add_course_service, 
     edit_course_service, get_course_details_service, get_user_role_counts_service, 
     get_course_department_counts_service, get_student_department_counts_service, get_available_students_service, enroll_student_service, unenroll_student_service
 )
-from app.db.users import User, get_all_users
+from app.db.users import User
 from app.db.departments import get_all_departments
 from app.forms import CreateUserForm, UpdateUserForm, CourseForm
 
@@ -63,10 +64,9 @@ def courses():
     total_pages = (total + per_page - 1) // per_page
 
     # Populate instructor choices dynamically
-    users = get_all_users()
-    instructors = [(user['id'], user['username']) for user in users if user['role_name'] == 'instructor']
+    
     course_form = CourseForm()
-    course_form.instructor_id.choices = instructors 
+    course_form.instructor_id.choices = get_instructor_choices()
     return render_template('admin/courses.html', title='Courses Dashboard', courses=courses, 
                           course_form=course_form, page=page, total_pages=total_pages)
 
@@ -137,10 +137,8 @@ def add_course():
     if current_user.role != 'admin':
         flash('Unauthorized access', 'danger')
         return redirect(url_for('admin.courses'))
-    users = get_all_users()
-    instructors = [(user['id'], user['username']) for user in users if user['role_name'] == 'instructor']
     form = CourseForm()
-    form.instructor_id.choices = instructors
+    form.instructor_id.choices = get_instructor_choices()
     if form.validate_on_submit():
         course_name = form.course_name.data
         department_id = form.department_id.data
@@ -167,10 +165,8 @@ def edit_course(course_id):
     if current_user.role != 'admin':
         flash('Unauthorized access', 'danger')
         return redirect(url_for('admin.courses'))
-    users = get_all_users()
-    instructors = [(user['id'], user['username']) for user in users if user['role_name'] == 'instructor']
     form = CourseForm()
-    form.instructor_id.choices = instructors
+    form.instructor_id.choices = get_instructor_choices()
     if form.validate_on_submit():
         course_name = form.course_name.data
         department_id = form.department_id.data
