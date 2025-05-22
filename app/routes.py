@@ -48,6 +48,7 @@ def courses():
                           instructors=None)
 
 @main.route('/courses/<int:course_id>')
+@login_required
 def course_detail(course_id):
     course = db_get_course_view_by_id(course_id)
     enrolled_students = get_enrolled_students(course_id)
