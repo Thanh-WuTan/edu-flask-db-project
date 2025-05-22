@@ -2,15 +2,13 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, current_user, login_required
 from app.service.auth_service import authenticate_user
 from app.service.admin_service import (
-    get_all_courses_service, delete_course_service, get_all_users_service, 
+    get_all_courses_service, delete_course_service, get_filtered_users_service, 
     delete_user_service, add_user_service, edit_user_service, add_course_service, 
     edit_course_service, get_course_details_service, get_user_role_counts_service, 
-    get_course_department_counts_service, get_student_department_counts_service, get_available_students_service, enroll_student_service, unenroll_student_service, 
-    get_course_count_by_semester_service
-
+    get_course_department_counts_service, get_student_department_counts_service, get_available_students_service, enroll_student_service, unenroll_student_service
 )
 from app.db.users import User, get_all_users
-from app.db.connector import get_db_connection
+from app.db.departments import get_all_departments
 from app.forms import CreateUserForm, UpdateUserForm, CourseForm
 
 admin = Blueprint('admin', __name__)
@@ -44,11 +42,9 @@ def dashboard():
     user_role_counts = get_user_role_counts_service()
     course_dept_counts = get_course_department_counts_service()
     student_dept_counts = get_student_department_counts_service()
-    course_semester_counts = get_course_count_by_semester_service()
 
     return render_template('admin/dashboard.html', title='Admin Dashboard', 
-                          user_role_counts=user_role_counts, course_dept_counts=course_dept_counts, 
-                          student_dept_counts=student_dept_counts, course_semester_counts=course_semester_counts)
+                          user_role_counts=user_role_counts, course_dept_counts=course_dept_counts, student_dept_counts=student_dept_counts)
 
 @admin.route('/dashboard/courses/', methods=['GET', 'POST'])
 @login_required
@@ -178,9 +174,8 @@ def edit_course(course_id):
         location = form.location.data
         schedule = form.schedule.data
         semester = form.semester.data
-        availability = form.availability.data
         try:
-            edit_course_service(course_id, course_name, department_id, instructor_id, location, schedule, semester, availability)
+            edit_course_service(course_id, course_name, department_id, instructor_id, location, schedule, semester)
             flash('Course updated successfully', 'success')
             return redirect(url_for('admin.courses'))
         except Exception as e:
@@ -192,12 +187,14 @@ def edit_course(course_id):
     return redirect(url_for('admin.courses'))
 
 
+
 @admin.route('/dashboard/users/', methods=['GET', 'POST'])
 @login_required
 def users():
     if current_user.role != 'admin':
         flash('Unauthorized access.', 'danger')
         return redirect(url_for('main.index'))
+    
     if request.method == 'POST':
         user_id = request.form.get('user_id')
         if user_id:
@@ -207,11 +204,29 @@ def users():
             except Exception as e:
                 flash(f'Error deleting user: {str(e)}', 'danger')
             return redirect(url_for('admin.users'))
-    users = get_all_users_service() 
+
+    # Get query parameters for filtering
+    page = int(request.args.get('page', 1))
+    per_page = 10
+    email = request.args.get('email', '').strip()
+    department_id = request.args.get('department_id', '')
+    department_id = int(department_id) if department_id.isdigit() and int(department_id) > 0 else None
+    role_name = request.args.get('role_name', '')
+    department_names = get_all_departments()
+    # Fetch filtered users
+    users, total = get_filtered_users_service(email, department_id, role_name, page, per_page)
+    
+    # Calculate pagination details
+    total_pages = (total + per_page - 1) // per_page
+
     create_form = CreateUserForm()
     update_form = UpdateUserForm()
-    return render_template('admin/users.html', title='Users Dashboard', users=users, create_form=create_form, update_form=update_form)
 
+    return render_template('admin/users.html', title='Users Dashboard', users=users,
+                          department_names=department_names, 
+                          create_form=create_form, update_form=update_form, 
+                          page=page, total_pages=total_pages, 
+                          email=email, department_id=department_id or 0, role_name=role_name)
 @admin.route('/dashboard/users/add', methods=['POST'])
 @login_required
 def add_user():

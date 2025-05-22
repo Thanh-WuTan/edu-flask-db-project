@@ -27,7 +27,7 @@
             <tr>
                 <th>ID</th>
                 <th>Course Name</th>
-                <th>Department ID</th>
+                <th>Department</th>
                 <th>Instructor ID</th>
                 <th>Location</th>
                 <th>Schedule</th>
@@ -41,7 +41,7 @@
             <tr onclick="window.location.href='{{ url_for('admin.course_detail', course_id=course.id) }}'" style="cursor: pointer;">
                 <td>{{ course.id }}</td>
                 <td>{{ course.course_name }}</td>
-                <td>{{ course.department_id }}</td>
+                <td>{{ course.department_name }}</td>
                 <td>{{ course.instructor_id|default('-', true) }}</td>
                 <td>{{ course.location|default('-', true) }}</td>
                 <td>{{ course.schedule|default('-', true) }}</td>
