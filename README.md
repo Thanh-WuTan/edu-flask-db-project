@@ -1,77 +1,56 @@
-# Student Course Management System
+# Course Enrollment Management System
 
-## 📄 Brief Description
-The Student Course Management System is a web-based application designed to streamline the management of courses, instructors, and students in an academic institution. 
-
-## 🎯 Functional & Non-functional Requirements
-### Functional Requirements
-
-**Admin Role:**
-- Create, update, and delete courses, instructors, and students.
-- Edit course and user information.
+This is a web-based application designed for managing course enrollment in educational institutions. It supports multiple roles (Administrators, Instructors, Students) with role-specific functionalities, including course management, enrollment tracking, and analytics dashboards.
 
 
-**Instructor Role:**
-- Add students to their teaching courses.
-- View the list of students enrolled in their courses.
-- Edit their courses' information
+## Project Overview
+- Purpose: Facilitate course enrollment and management with a focus on usability, security, and scalability.
+- Technologies: Flask, Bootstrap, MySQL.
+
+## Functional Requirements
+
+### Course Management:
+- The system must display a list of courses with filters by course name, department, and schedule, supporting pagination (10 courses per page).
+- Users can view detailed course information (e.g., ID, name, department, instructor, location, schedule, semester, availability) on a course detail page.
+- Admins can add, edit, and delete courses, while instructors and students can only view course details.
+- The system must track and display enrolled students for each course.
+
+### Enrollment Management:
+- Students must be able to enroll in a course if availability is greater than zero and they are not already enrolled, with a confirmation dialog before submission.
+- Students must be able to unenroll from a course if they are enrolled, with a confirmation dialog before submission.
+- The system must update course availability automatically when students enroll or unenroll.
+- The system must prevent enrollment if the course is full (availability ≤ 0) or if the student is already enrolled.
+
+### User Interface and Navigation:
+- The system must provide a responsive web interface using Bootstrap for consistent styling across devices.
+- Each role (student, instructor, admin) must have a dedicated dashboard with role-specific options.
+- Flash messages must be displayed to provide feedback on actions (e.g., success or error messages for login, enrollment).
+
+### Analytics:
+- Administrators should have access to dashboards that provide detailed reports on institutional courses.
 
 
-**Student Role:**
-- Register and enroll in courses.
-- View the list of courses they are enrolled in and students in those courses.
+## Non-Functional Requirements
 
+### Performance:
+- The system must have high uptime, with all errors handled to prevent crashes.
+- Queries should execute within 0.5 seconds for a dataset of 1000 enrollments.
 
-**Analytics:**
-- tbd
+### Security:
+- Passwords must be encrypted using the bcrypt hashing function when stored in the database.
+- Role-based access control must be implemented to prevent unauthorized information access or disclosure.
+- The system must include preventions or mitigations for common web security vulnerabilities, including SQL Injection and Cross-site Scripting (XSS).
 
+### Scalability:
+- The application must be scalable to handle an increasing number of users, supporting around 300 users during peak times.
 
-**User Authentication:**
-- Secure login for all roles with role-based access control.
+### Usability:
+- The system must provide an easy-to-navigate interface, with a responsive UI built using the Bootstrap library.
 
-### Non-functional Requirements
+### Reliability:
+- Data integrity must be ensured with a normalized database design (3NF) and appropriate constraints.
 
-- **Performance:** Queries should execute within 0.05 seconds for a dataset of 1000 enrollments.
-- **Security:** Encrypt passwords, use role-based privileges, and prevent SQL injection.
-- **Scalability**: Support at least 100 concurrent users via Docker containerization.
-- **Usability:** Provide a simple, responsive UI using Bootstrap.
-- **Reliability:** Ensure data integrity with normalized database design (3NF) and constraints.
-
-## 🧱 Planned Core Entities
-
-- Users: Stores common attributes (user_id, email, password, role, name) for all roles.
-- Instructors: Links to Users, includes instructor_id and department_id.
-- Students: Links to Users, includes student_id and department_id.
-- Courses: Stores course_id, name, department_id, and instructor_id.
-- Enrollments: Junction table for student-course relationships (student_id, course_id, enrollment_date).
-Departments: Stores department_id and name (CECS, CAS, CBM, CHS).
-
-## 🔧 Tech Stack
-
-- Database: MySQL 8.0 (normalized to 3NF, with views, stored procedures, triggers, and indexes).
-Backend: Flask (Python) for REST API, handling CRUD operations and authentication.
-- Frontend: HTML/CSS with Bootstrap 5.1.3 for a responsive, simple user interface.
-- Containerization: Docker and Docker Compose for MySQL and Flask app deployment.
-- Testing: Postman for API testing, manual testing for UI.
-
-## 👥 Team Members and Roles
-
-- Nguyen Tuan Anh: Testing, Backend Development
-- Truong Gia Bao: Frontend Development, Testing 
-- Vu Ai Thanh: Database Design, Backend Development
-
-## 📅 Timeline
-
-- May 1 - May 6, 2025: Project planning, requirements gathering, initial ERD design.
-- May 7 - May 10, 2025: Database setup (DDL scripts, normalization), Docker configuration.
-- May 11 - May 17, 2025: Backend development (Flask API, authentication, CRUD endpoints).
-- May 18 - May 22, 2025: Frontend development (HTML/CSS with Bootstrap), integration with backend.
-- May 23 - May 25, 2025: End-to-end testing, analytics implementation, documentation.
-- May 26 - May 27, 2025: Final report and slides preparation, presentation rehearsal, submission.
-
-
-
-## Setup Instructions
+## Installation and Setup
 1. Clone the Repository:
 
 ```bash
@@ -105,4 +84,7 @@ docker-compose up -d
 
 4. Access the Application:
 - Once the containers are running, the web application is accessible at http://localhost:5000.
-- The MySQL database is available at localhost:3308 (use the credentials from .env).
+- The MySQL database is available at localhost:3306 (use the credentials from .env).
+
+## Supporting Documentation
+- Design Document: Full details in DesignDocument.pdf (included in repo).

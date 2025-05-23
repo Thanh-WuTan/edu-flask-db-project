@@ -1,7 +1,7 @@
 from .connector import get_db_connection
 from mysql.connector import Error
 
-def get_all_departments():
+def db_get_all_departments():
     connection = get_db_connection()
     if connection is None:
         return []

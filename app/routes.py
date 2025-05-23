@@ -1,13 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from app.service.main_service import enroll_student_service, unenroll_student_service, get_courses_with_filters, get_department_options, get_schedule_options, get_course_details_service
-from app.service.instructor_service import get_course_by_instructor_id
-from flask_login import login_user, current_user, login_required
-
+from flask_login import current_user, login_required
+from app.role_required import role_required
+from app.service.main_service import get_department_options, get_schedule_options
+from app.db.courses import db_get_filtered_courses, db_get_course_view_by_id
+from app.db.enrollment import db_get_enrolled_students, db_enroll_student, db_unenroll_student
 main = Blueprint('main', __name__)
-
-# @main.route('/')
-# def index():
-#     return render_template('index.html', title='Home')
 
 @main.route('/')
 def index():
@@ -38,7 +35,7 @@ def courses():
     instructor_id = int(instructor_id) if instructor_id.isdigit() and int(instructor_id) > 0 else None
 
     # Fetch courses with filters
-    courses, total = get_courses_with_filters(search_query, department_id, schedule, instructor_id, page, per_page)
+    courses, total = db_get_filtered_courses(search_query, department_id, schedule, instructor_id, page, per_page)
 
     # Calculate pagination details
     total_pages = (total + per_page - 1) // per_page
@@ -51,8 +48,10 @@ def courses():
                           instructors=None)
 
 @main.route('/courses/<int:course_id>')
+@login_required
 def course_detail(course_id):
-    course, enrolled_students = get_course_details_service(course_id)
+    course = db_get_course_view_by_id(course_id)
+    enrolled_students = db_get_enrolled_students(course_id)
     if not course:
         flash('Course not found.', 'danger')
         return redirect(url_for('main.index'))
@@ -60,15 +59,12 @@ def course_detail(course_id):
 
 @main.route('/courses/<int:course_id>/enroll', methods=['POST'])
 @login_required
+@role_required('student')
 def enroll_student(course_id):
-    if current_user.role != 'student':
-        flash('Unauthorized access.', 'danger')
-        return redirect(url_for('main.course_detail', course_id=course_id))
-    
     student_id = request.form.get('student_id')
     if student_id:
         try:
-            enroll_student_service(int(student_id), course_id)
+            db_enroll_student(int(student_id), course_id)
             flash('Enrolled successfully!', 'success')
         except Exception as e:
             flash(f'Error enrolling: {str(e)}', 'danger')
@@ -77,13 +73,10 @@ def enroll_student(course_id):
 
 @main.route('/courses/<int:course_id>/unenroll/<int:student_id>', methods=['POST'])
 @login_required
+@role_required('student')
 def unenroll_student(course_id, student_id):
-    if current_user.role != 'student':
-        flash('Unauthorized access.', 'danger')
-        return redirect(url_for('main.course_detail', course_id=course_id))
-    
     try:
-        unenroll_student_service(student_id, course_id)
+        db_unenroll_student(student_id, course_id)
         flash('Unenrolled successfully!', 'success')
     except Exception as e:
         flash(f'Error unenrolling: {str(e)}', 'danger')
