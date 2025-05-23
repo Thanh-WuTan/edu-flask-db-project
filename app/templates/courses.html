@@ -1,6 +1,49 @@
 {% extends 'base.html' %}
 {% block title %}Courses{% endblock %}
 {% block content %}
+
+{% block scripts %}
+<script>
+function handleScheduleChange(checkbox) {
+    const allCheckbox = document.getElementById('scheduleAll');
+    const dayCheckboxes = document.querySelectorAll('.day-checkbox');
+    const scheduleInput = document.getElementById('scheduleInput');
+
+    if (checkbox.value === 'all') {
+        // If "All Schedules" is checked, uncheck all other options
+        if (checkbox.checked) {
+            dayCheckboxes.forEach(cb => cb.checked = false);
+            scheduleInput.value = '';
+        }
+    } else {
+        // If any day is checked, uncheck "All Schedules"
+        allCheckbox.checked = false;
+        
+        // Get all checked day values and concatenate
+        const selectedDays = Array.from(dayCheckboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value)
+            .join('');
+            
+        scheduleInput.value = selectedDays;
+        
+        // If nothing is selected, check "All Schedules"
+        if (!selectedDays) {
+            allCheckbox.checked = true;
+        }
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const scheduleInput = document.getElementById('scheduleInput');
+    if (!scheduleInput.value) {
+        document.getElementById('scheduleAll').checked = true;
+    }
+});
+</script>
+{% endblock %}
+
 <div class="container">
     <h1 style="color: #2C3E50;">Courses</h1>
     <!-- Search and Filter Form -->
@@ -24,12 +67,46 @@
             </div>
             <div class="col-md-2">
                 <div class="form-group">
-                    <label for="schedule">Filter by Schedule</label>
+                    <!-- <label for="schedule">Filter by Schedule</label>
                     <select class="form-select" id="schedule" name="schedule">
                         {% for sched_val, sched_name in schedules %}
                             <option value="{{ sched_val }}" {% if sched_val == schedule %}selected{% endif %}>{{ sched_name }}</option>
                         {% endfor %}
-                    </select>
+                    </select> -->
+
+                    <label for="schedule"></label>
+                    <div class="dropdown">
+                        <button class="btn-secondary dropdown-toggle form-select" type="button" id="scheduleDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Filter by Schedule
+                        </button>
+                        <input type="hidden" name="schedule" id="scheduleInput" value="{{ schedule }}">
+                        <ul class="dropdown-menu p-2" style="width: 100%;" aria-labelledby="scheduleDropdown">
+                            <li>
+                                <div class="form-check">
+                                    <input class="form-check-input schedule-checkbox" type="checkbox" 
+                                        value="all" id="scheduleAll"
+                                        {% if not schedule %}checked{% endif %}
+                                        onchange="handleScheduleChange(this)">
+                                    <label class="form-check-label" for="scheduleAll">All Schedules</label>
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            {% for sched_val, sched_name in schedules[1:] %}
+                            <li>
+                                <div class="form-check">
+                                    <input class="form-check-input schedule-checkbox day-checkbox" type="checkbox" 
+                                        value="{{ sched_val }}" 
+                                        id="schedule{{ sched_val }}"
+                                        {% if sched_val in schedule %}checked{% endif %}
+                                        onchange="handleScheduleChange(this)">
+                                    <label class="form-check-label" for="schedule{{ sched_val }}">
+                                        {{ sched_name }}
+                                    </label>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="col-md-2 d-flex align-items-end">

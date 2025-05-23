@@ -40,7 +40,7 @@ def get_filtered_courses(search_query=None, department_id=None, schedule=None, i
             params.append(department_id)
         if schedule:
             query += " AND c.schedule LIKE %s"
-            params.append(f"%{schedule}%")
+            params.append(f"{schedule}")
         if instructor_id:
             query += " AND c.instructor_id = %s"
             params.append(instructor_id)

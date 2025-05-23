@@ -92,10 +92,10 @@ def create_course(course_name, department_id, instructor_id, location, schedule,
         connection.close()
 
 def generate_test_data():
-    # Create 20 random instructors
+    # Create 200 random instructors
     instructors = []
-    for i in range(20):
-        username = f"instructor_{i+20:02d}"
+    for i in range(200):
+        username = f"instructor_{i+1:02d}"
         email = generate_random_email(username)
         password = generate_random_password()
         instructor_id = create_instructor(username, email, password)
@@ -105,8 +105,8 @@ def generate_test_data():
         else:
             print(f"Failed to create instructor: {username}")
 
-    # Create 100 random courses
-    for _ in range(1000):
+    # Create 200 random courses
+    for _ in range(200):
         course_name = random.choice(COURSE_NAMES)
         department_id = random.randint(1, 5)  # Departments 1-5
         instructor_id = random.choice(instructors) if instructors else None
@@ -122,10 +122,10 @@ def generate_test_data():
             print(f"Failed to create course: {course_name}")
 
 def generate_students(): 
-    # create 200 random students 
+    # create 3000 random students 
     connection = get_db_connection()
     students = []
-    for i in range(10):
+    for i in range(3000):
         username = f"student_{i+1:03d}"
         email = generate_random_email(username)
         password = generate_random_password()
@@ -146,19 +146,19 @@ def generate_students():
             print(f"Error creating student {username}: {e}")
         finally:
             cursor.close()
+    connection.close()
+    return students
 
-def generate_enrollments():
-    # create around 10000 random enrollments. Enroll each student in 1-5 courses 
-    
+def generate_enrollments(students):
     connection = get_db_connection()
     if connection is None:
         return
     try:
         cursor = connection.cursor()
-        for student_id in range(1, 2000):  # Assuming student IDs are from 1001 to 1999
-            # Enroll each student in 1-5 random courses
-            num_courses = random.randint(1, 5)
-            course_ids = random.sample(range(161, 171), num_courses)  # Assuming 150 courses exist
+        for student_id in students:
+            # Enroll each student in 5-10 random courses
+            num_courses = random.randint(5, 10)
+            course_ids = random.sample(range(1, 201), num_courses)  # Assuming 200 courses exist
             print(f"Enrolling student {student_id} in {num_courses} courses: {course_ids}")
             try:
                 for course_id in course_ids:
@@ -176,6 +176,7 @@ def generate_enrollments():
     finally:
         cursor.close()
         connection.close()
+        
 if __name__ == "__main__":
     # Ensure required libraries are installed
     try:
@@ -186,6 +187,6 @@ if __name__ == "__main__":
         exit(1)
         
     generate_test_data()
-    generate_enrollments()
-    generate_students()
+    students = generate_students()
+    generate_enrollments(students)
     print("Test data generation completed.")

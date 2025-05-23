@@ -22,6 +22,8 @@ format:
           commandchars=\\\{\},
           breaklines, breaknonspaceingroup, breakanywhere
         }
+tbl-cap-location: bottom
+code-overflow: wrap
 # bibliography: references.bib
 geometry: 
   - inner=3cm
@@ -152,6 +154,8 @@ There are 03 stored procedures within the database, which are used as quick refr
 | `get_student_department_counts()` | Collect number of students across departments, adaptive with future new departments, or changing numbers of students |
 | `get_course_count_by_semester()` | Filtering number of courses in each semesters | 
 
+: Stored Procedures used in the application {tbl-colwidths="[40, 60]"}
+
 ## Triggers
 
 In the functionalities of the application, there are features that automatically update available slots in each course after enrollment. To efficiently operate this feature, we introduced two triggers:
@@ -159,4 +163,96 @@ In the functionalities of the application, there are features that automatically
 + `before_enrollment_insert()`: This trigger is used to check if there are enough seats left in the course. Whenever a student registered a course, this trigger will reduce the available slots by one. When there is no seat available, it will raise an exception for the business logic to know and handle. 
 + `after_enrollment_delete()`: In several cases, student may want to drop the course. This trigger simply increase one seat for the course whenever a student unenroll it. 
 
-Due to the atomic & synchronize features of MySQL, there are no race con
+Due to the atomic nature of a trigger in MySQL, there are no race condition error within the the app lifecycle, within the scope of the database itself. 
+
+# Performance Tuning
+
+From our default schema, by design of MySQL, several indexes are automatically created (based on `UNIQUE` keyword, or using `INTEGER`). 
+
+![Default indexes in the database](./images/default_indexes.png){height="50%"}
+
+Without any new indexes, normal operations in the database is very fast. For example, the query for a user in the database by email 
+
+![Performance of email matching to user](./images/email_filter.png)
+
+## Problem with filter
+
+In the application, there is a function to allow users to filter courses based on its schedule. Due to schedule could be any combination of dates within a day, the query could be very slow as there is no current index on `dates`.
+
+![Filtering function of the course search](./images/filter.png){width="50%"}
+
+For example, this query on dates required traversal of all 200 courses in our test database, with no potential keys are used. 
+
+![Sample date query](./images/sample_date_before.png)
+
+## Selecting over partitions/indexes 
+
+To minimize the overhead and complexities of adding more columns, we selected to add an index on table `courses`, over the field `schedule`. 
+
+```sql
+CREATE INDEX idx_courses_schedule ON courses(schedule);
+```
+
+### Failed attempts
+
+1. At first, we tried to used hash partitions, by introducing an user defined function to map the schedule as a bitmask for hashing. However, MySQL do not support custom hash functions. 
+2. We also tried to use list partitions on the string (as there are only 32 combinations of sorted calendar). However, we found out that the InnoDB engine of MySQL do not support partitions for tables that contains foreign keys. 
+
+### Performance after tuning
+
+![Performance after adding the index](./images/sample_date_new.png)
+
+With the introduction of this new index, the query performance boost significantly. For example, the database now only needs to filter 19 rows, which are also shared the date is "M". The reason behind this behavior is that, the index introduced created a hash map from newly created `schedule` value. However, compared to represent the schedule as a bitmask, this is slightly slower; but required a much smaller complexity. 
+
+# Security Configuration 
+
+## Access Control & Authorization
+
++ The system allow users (students, instructors, and admins) to log in using email and password credentials.
++ Users must be assigned roles (student, instructor, admin) with role-specific access to features (e.g., students can enroll/unenroll, instructors can view/manage courses, admins can manage users and courses).
+
+## Password Storage
+
++ For user password, we are not using native functions in SQL. There are two main reasons: 
+
+### Lack of custom hash functions 
+
+MySQL only offers plain cryptographic hash functions, and a lot of them are deprecated like MD5 or SHA1. Also, it only supports AES-256 for symmetric encryption, but it is not are in the scope of our usage for password storage (else, we need to introduce mechanism for user's secret key)
+
+### Lack of salt before hashing
+
+For plain usage of cryptographic hash function, user's password is still at risk of rainbow search attack, which attackers attempts to brute-force for the password (for matching hash), or looking up in public database. 
+
++ Therefore, passwords in the database are encrypted when being stored in the database, with supports of password hashing function `bcrypt`, which provides the mechanism for a easy to implement password hashing scheme. 
+
+## Prevent SQL injection 
+
+SQL arguments in the database is implemented using parametrization, which prevents the risk of SQL injection by using `sqlalchemy` to do the input validation instead of the application's business logic. This is also fault-tolerant, to prevent the risk of developer's faults. 
+
+```python
+cursor.execute("SELECT id FROM roles WHERE role_name = %s", (role_name,))
+role_id = cursor.fetchone()[0]
+cursor.execute(
+  "INSERT INTO users (email, username, password, role, phone, department_id) VALUES (%s, %s, %s, %s, %s, %s)",
+  (email, username, password, role_id, phone, department_id)
+)
+```
+
+# End-to-End Testing & Web Integration
+
+The website provides both the data visualization for analytics, as well as CRUD functions on the objects: users (admin, instructor, student), courses, student enrollment, etc. 
+
+![Analytic visualization in the application](./images/analytics.png){width="50%"}
+
+![CRUD operations in courses](./images/course_crud.png){width="50%"}
+
+![Manage students in courses](./images/students.png){width="50%"}
+
+
+More detailed application interaction will be provided in the final presentation.
+
+# Presentation & Material 
+
++ [Presentation's slide deck](https://github.com/Thanh-WuTan/edu-flask-db-project/tree/main/documents/Presentation.pdf)
++ [Final report](https://github.com/Thanh-WuTan/edu-flask-db-project/tree/main/documents/FinalReport.pdf)
++ Source code: [https://github.com/Thanh-WuTan/edu-flask-db-project](https://github.com/Thanh-WuTan/edu-flask-db-project)

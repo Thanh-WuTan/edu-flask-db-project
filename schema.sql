@@ -58,10 +58,11 @@ CREATE TABLE enrollments (
 );
 
 -- Create indexes for performance
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_role ON users(role);
-CREATE INDEX idx_courses_instructor ON courses(instructor_id);
-CREATE INDEX idx_enrollments_student_course ON enrollments(student_id, course_id);
+-- CREATE INDEX idx_users_email ON users(email);
+-- CREATE INDEX idx_users_role ON users(role);
+-- CREATE INDEX idx_courses_instructor ON courses(instructor_id);
+-- CREATE INDEX idx_enrollments_student_course ON enrollments(student_id, course_id);
+CREATE INDEX idx_courses_schedule ON courses(schedule);
 
 -- Insert initial roles
 INSERT INTO roles (role_name)  VALUES ('admin'), ('instructor'), ('student'), ('guest');
@@ -165,3 +166,29 @@ SELECT
 FROM 
     courses c
     LEFT JOIN users u ON c.instructor_id = u.id;
+
+DELIMITER //
+
+CREATE FUNCTION schedule_to_bitmask(schedule VARCHAR(255)) 
+RETURNS INTEGER
+DETERMINISTIC
+BEGIN
+    DECLARE bitmask INTEGER DEFAULT 0;
+    DECLARE i INTEGER DEFAULT 1;
+    DECLARE c CHAR;
+    
+    -- Loop through each character in the schedule string
+    WHILE i <= 5 DO
+        SET c = SUBSTRING(schedule, i, 1);
+        CASE c
+            WHEN 'M' THEN SET bitmask = bitmask | 16; -- 10000 in binary
+            WHEN 'T' THEN SET bitmask = bitmask | 8;  -- 01000 in binary
+            WHEN 'W' THEN SET bitmask = bitmask | 4;  -- 00100 in binary
+            WHEN 'R' THEN SET bitmask = bitmask | 2;  -- 00010 in binary
+            WHEN 'F' THEN SET bitmask = bitmask | 1;  -- 00001 in binary
+        END CASE;
+        SET i = i + 1;
+    END WHILE;
+    
+    RETURN bitmask;
+END //
