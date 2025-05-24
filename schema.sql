@@ -103,24 +103,6 @@ BEGIN
 END //
 DELIMITER ;
 
--- Trigger to manage course availability on enrollment
-DELIMITER //
-CREATE TRIGGER before_enrollment_insert
-BEFORE INSERT ON enrollments
-FOR EACH ROW
-BEGIN
-    DECLARE current_availability INT;
-    SELECT availability INTO current_availability FROM courses WHERE id = NEW.course_id FOR UPDATE;
-    IF current_availability <= 0 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Cannot enroll: Course has no available seats.';
-    END IF;
-    UPDATE courses SET availability = availability - 1 WHERE id = NEW.course_id;
-END //
-DELIMITER ;
-
-
--- New stored procedure to get course counts by semester
 DELIMITER //
 CREATE PROCEDURE get_course_count_by_semester()
 BEGIN
@@ -139,6 +121,22 @@ BEGIN
         END ASC;
 END //
 
+DELIMITER ;
+
+-- Trigger to manage course availability on enrollment
+DELIMITER //
+CREATE TRIGGER before_enrollment_insert
+BEFORE INSERT ON enrollments
+FOR EACH ROW
+BEGIN
+    DECLARE current_availability INT;
+    SELECT availability INTO current_availability FROM courses WHERE id = NEW.course_id FOR UPDATE;
+    IF current_availability <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot enroll: Course has no available seats.';
+    END IF;
+    UPDATE courses SET availability = availability - 1 WHERE id = NEW.course_id;
+END //
 DELIMITER ;
 
 -- Trigger to increase course availability on unenrollment
