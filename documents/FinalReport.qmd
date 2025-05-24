@@ -74,7 +74,7 @@ The project is aimed to provide a yet minimal but still functional of a manageme
 
 #### Analytics 
 
-+ For management roles like `Administrators` and `Instructors`, they will have access to several dashboards to report about the courses at the institution, or the courses that the instructors are involving in. 
++ For management roles like `Administrators` they will have access to several dashboards to report about the courses at the institution  . 
 
 
 ### Non-functional 
@@ -120,7 +120,7 @@ The project is aimed to provide a yet minimal but still functional of a manageme
 
 ## Database schema
 
-The full script is in our GitHub repository at this [link](https://github.com/Thanh-WuTan/edu-flask-db-project/blob/capacity/schema.sql).
+The full script is in our GitHub repository at this [link](https://github.com/Thanh-WuTan/edu-flask-db-project/blob/main/schema.sql).
 
 ## Views
 
@@ -145,7 +145,7 @@ FROM
 
 ## Stored Procedures
 
-There are 03 stored procedures within the database, which are used as quick refrence for most used queries within the lifecycle of the application: 
+There are 04 stored procedures within the database, which are used as quick refrence for most used queries within the lifecycle of the application: 
 
 | Stored Procedures                 | Purposes                                                                                                             |
 | --------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
@@ -210,7 +210,10 @@ With the introduction of this new index, the query performance boost significant
 
 + The system allow users (students, instructors, and admins) to log in using email and password credentials.
 + Users must be assigned roles (student, instructor, admin) with role-specific access to features (e.g., students can enroll/unenroll, instructors can view/manage courses, admins can manage users and courses).
-
++ Code References:
+  + \texttt{\href{https://github.com/Thanh-WuTan/edu-flask-db-project/blob/main/app/service/auth_service.py}{auth\_service.py}}: Handles registration, password validation, login, and password hashing.
+  + \texttt{\href{https://github.com/Thanh-WuTan/edu-flask-db-project/blob/main/app/role_required.py}{role\_required.py}}: Defines a decorator to restrict route access based on user roles.
+  
 ## Password Storage
 
 + For user password, we are not using native functions in SQL. There are two main reasons: 
