@@ -229,8 +229,7 @@ For plain usage of cryptographic hash function, user's password is still at risk
 + Therefore, passwords in the database are encrypted when being stored in the database, with supports of password hashing function `bcrypt`, which provides the mechanism for a easy to implement password hashing scheme. 
 
 ## Prevent SQL injection 
-
-SQL arguments in the database is implemented using parametrization, which prevents the risk of SQL injection by using `sqlalchemy` to do the input validation instead of the application's business logic. This is also fault-tolerant, to prevent the risk of developer's faults. 
+A crucial component of the application is making sure that database interactions are secure. All functions that communicate with the database are grouped under the \href{https://github.com/Thanh-WuTan/edu-flask-db-project/tree/main/app/db}{app/db/} directory in order to prevent SQL injection attacks. These functions are implemented to only run SQL queries that are parameterized, which significantly reduces the possibility of malicious SQL code injection. By separating SQL code from user input and guaranteeing that input data is handled as data rather than executable code, parameterized queries improve the system's overall security posture.
 
 ```python
 cursor.execute("SELECT id FROM roles WHERE role_name = %s", (role_name,))
