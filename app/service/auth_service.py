@@ -5,7 +5,7 @@ from app.db.users import db_get_user_by_email, db_create_user
 
 def is_strong_password(password):
     # At least 8 characters, with at least one uppercase, one lowercase, one digit, and one special character
-    return bool(re.match(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', password))
+    return bool(re.match(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{8,}$', password))
 
 def register_user(email, username, password, confirm_password):
     if password != confirm_password:
