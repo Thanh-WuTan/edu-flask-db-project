@@ -242,16 +242,179 @@ cursor.execute(
 
 # End-to-End Testing & Web Integration
 
-The website provides both the data visualization for analytics, as well as CRUD functions on the objects: users (admin, instructor, student), courses, student enrollment, etc. 
+Given the scope of the project, we opted for **manual end-to-end testing** to validate the functionality across the web interface and the database layer. The following test scenarios cover key features including authentication, course management, enrollment, and role-based access.
 
-![Analytic visualization in the application](./images/analytics.png){width="50%"}
+## Insert Sample Data
 
-![CRUD operations in courses](./images/course_crud.png){width="50%"}
+We inserted sample data using a script executed directly inside the container:
 
-![Manage students in courses](./images/students.png){width="50%"}
+```
+docker cp test.py edu-flask-db-project_web_1:/tmp/test.py
+docker exec -it edu-flask-db-project_web_1 python3 /tmp/test.py  # For Mac/Linux
+# Or
+docker exec -it edu-flask-db-project_web_1 python /tmp/test.py   # For Windows
+```
 
+![](./images/Pasted%20image%2020250525172759.png)
 
-More detailed application interaction will be provided in the final presentation.
+---
+
+## Registration & Role Assignment
+
+All newly registered accounts are initially assigned the `guest` role. Admin users are responsible for promoting accounts to `student` or `instructor`.
+
+### Password Strength Validation
+
+Weak passwords are rejected to ensure security:
+
+![](./images/Pasted%20image%2020250525174300.png)
+![](./images/Pasted%20image%2020250525174329.png)
+![](./images/Pasted%20image%2020250525180724.png)
+
+The following query confirms the encrypted password is securely stored:
+
+```
+SELECT u.*, r.role_name
+FROM users u
+JOIN roles r ON u.role = r.id
+WHERE u.email = 'test_register@gmail.com';
+```
+
+---
+
+## Login & Role-Based Dashboards
+
+### Admin View
+
+![](./images/Pasted%20image%2020250525181647.png)
+![](./images/Pasted%20image%2020250525181704.png)
+![](./images/Pasted%20image%2020250525181718.png)
+
+### Student View
+
+![](./images/Pasted%20image%2020250525182459.png)
+
+### Instructor View
+
+![](./images/Pasted%20image%2020250525182700.png)
+
+### Guest View
+
+![](./images/Pasted%20image%2020250525180755.png)
+
+---
+
+## Admin Course Management
+
+### Add Course
+
+![](./images/Pasted%20image%2020250525182916.png)
+![](./images/Pasted%20image%2020250525182929.png)
+![](./images/Pasted%20image%2020250525183048.png)
+
+```
+SELECT * FROM courses WHERE course_name = 'Test_Adding_Course';
+```
+
+### Delete Course
+
+![](./images/Pasted%20image%2020250525183746.png)
+![](./images/Pasted%20image%2020250525183825.png)
+
+---
+
+## Manage Student Enrollments
+
+### Add Student to Course
+
+![](./images/Pasted%20image%2020250525184445.png)
+![](./images/Pasted%20image%2020250525184339.png)
+![](./images/Pasted%20image%2020250525184536.png)
+
+```
+SELECT u.id AS student_id, u.username, u.email, d.department_name
+FROM enrollments e
+JOIN users u ON e.student_id = u.id
+JOIN courses c ON e.course_id = c.id
+JOIN departments d ON u.department_id = d.id
+WHERE c.course_name = 'test_add_student_instructor';
+```
+
+### Remove Student from Course
+
+![](./images/Pasted%20image%2020250525184824.png)
+![](./images/Pasted%20image%2020250525184837.png)
+
+---
+
+## Manage Users
+
+### Set Instructor Role
+
+![](./images/Pasted%20image%2020250525182116.png)
+![](./images/Pasted%20image%2020250525182141.png)
+![](./images/Pasted%20image%2020250525182229.png)
+
+### Set Student Role
+
+![](./images/Pasted%20image%2020250525182336.png)
+![](./images/Pasted%20image%2020250525182422.png)
+
+---
+
+## Student Enrollment Workflow
+
+### Enroll in Non-Full Course
+
+![](./images/Pasted%20image%2020250525190508.png)
+![](./images/Pasted%20image%2020250525190540.png)
+![](./images/Pasted%20image%2020250525191714.png)
+
+```
+SELECT e.*
+FROM enrollments e
+JOIN users u ON e.student_id = u.id
+JOIN courses c ON e.course_id = c.id
+WHERE u.username = 'test_enroll_student' AND c.course_name = 'DevOps';
+```
+
+### Attempt Enroll in Full Course
+
+![](./images/Pasted%20image%2020250525192248.png)
+
+### Unenroll from Course
+
+![](./images/Pasted%20image%2020250525192100.png)
+![](./images/Pasted%20image%2020250525192111.png)
+
+---
+
+## Instructor Management Interface
+
+Instructors can add or remove students **only in the courses they are assigned to**.
+
+![](./images/Pasted%20image%2020250525190213.png)
+![](./images/Pasted%20image%2020250525190233.png)
+![](./images/Pasted%20image%2020250525190245.png)
+
+---
+
+## Course Viewing & Filtering
+
+![](./images/Pasted%20image%2020250525173642.png)
+![](./images/Pasted%20image%2020250525173707.png)
+
+### Filter by Name
+
+![](./images/Pasted%20image%2020250525173813.png)
+
+### Filter by Department
+
+![](./images/Pasted%20image%2020250525173858.png)
+
+### Filter by Schedule
+
+![](./images/Pasted%20image%2020250525173953.png)
 
 # Presentation & Material 
 
