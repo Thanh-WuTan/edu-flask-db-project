@@ -240,98 +240,122 @@ cursor.execute(
 )
 ```
 
-# End-to-End Testing & Web Integration
+## End-to-End Testing & Web Integration
 
-Given the scope of the project, we opted for **manual end-to-end testing** to validate the functionality across the web interface and the database layer. The following test scenarios cover key features including authentication, course management, enrollment, and role-based access.
+Due to the scope of this project, we conducted **manual end-to-end testing** to verify the system's functionality by inspecting both the user interface and the underlying database.
 
-## Insert Sample Data
+### Insert Sample Data
 
-We inserted sample data using a script executed directly inside the container:
+Sample data was injected into the system using the following commands:
 
 ```
 docker cp test.py edu-flask-db-project_web_1:/tmp/test.py
-docker exec -it edu-flask-db-project_web_1 python3 /tmp/test.py  # For Mac/Linux
-# Or
-docker exec -it edu-flask-db-project_web_1 python /tmp/test.py   # For Windows
+Mac/Linux: docker exec -it edu-flask-db-project_web_1 python3 /tmp/test.py
+Windows: docker exec -it edu-flask-db-project_web_1 python /tmp/test.py
 ```
 
 ![](./images/testing_img/Pasted%20image%2020250525172759.png)
 
----
+### Registration
 
-## Registration & Role Assignment
-
-All newly registered accounts are initially assigned the `guest` role. Admin users are responsible for promoting accounts to `student` or `instructor`.
-
-### Password Strength Validation
-
-Weak passwords are rejected to ensure security:
+All registered accounts are initially assigned the role of "guest." Only administrators have the authority to assign roles such as "student" or "instructor."
 
 ![](./images/testing_img/Pasted%20image%2020250525174300.png)
+
+An error message is displayed to enforce strong password requirements.
+
 ![](./images/testing_img/Pasted%20image%2020250525174329.png)
+
+This was the result of testing with the password `Database#2025`.
+
 ![](./images/testing_img/Pasted%20image%2020250525180724.png)
 
-The following query confirms the encrypted password is securely stored:
+The corresponding record in the database, showing the password is securely hashed using `bcrypt`:
 
+```cmd
+mysql> SELECT u.*, r.role_name FROM users u JOIN roles r ON u.role = r.id WHERE u.email = "test_register@gmail.com";
++------+---------------+--------------------------------------------------------------+------+-------+-------------------------+---------------+---------------------+-----------+
+| id   | username      | password                                                     | role | phone | email                   | department_id | created_at          | role_name |
++------+---------------+--------------------------------------------------------------+------+-------+-------------------------+---------------+---------------------+-----------+
+| 3202 | test_register | $2b$12$ar.ffzBCzJ9s.xXFXReooOZahTzEEPDpV6EOr0QBebndDKwLnre7. |    4 | NULL  | test_register@gmail.com |             5 | 2025-05-25 11:06:39 | guest     |
++------+---------------+--------------------------------------------------------------+------+-------+-------------------------+---------------+---------------------+-----------+
+1 row in set (0.00 sec)
 ```
-SELECT u.*, r.role_name
-FROM users u
-JOIN roles r ON u.role = r.id
-WHERE u.email = 'test_register@gmail.com';
-```
 
----
+### Login
 
-## Login & Role-Based Dashboards
+#### As Admin
 
-### Admin View
+The administrator account is predefined in the source code and can be customized freely. Below is the admin dashboard upon successful login:
 
 ![](./images/testing_img/Pasted%20image%2020250525181647.png)
 ![](./images/testing_img/Pasted%20image%2020250525181704.png)
 ![](./images/testing_img/Pasted%20image%2020250525181718.png)
 
-### Student View
+#### As Student
+
+Students can view all available courses and manage their enrollments.
 
 ![](./images/testing_img/Pasted%20image%2020250525182459.png)
 
-### Instructor View
+#### As Instructor
+
+Instructors have access to view and manage only the courses they are responsible for.
 
 ![](./images/testing_img/Pasted%20image%2020250525182700.png)
 
-### Guest View
+#### As Guest
+
+Guests do not have access to core functionalities until their role is upgraded.
 
 ![](./images/testing_img/Pasted%20image%2020250525180755.png)
 
----
+### Admin Functions
 
-## Admin Course Management
+#### Manage Courses
 
-### Add Course
+##### Add Course
 
 ![](./images/testing_img/Pasted%20image%2020250525182916.png)
 ![](./images/testing_img/Pasted%20image%2020250525182929.png)
+
+Validation is applied to ensure all fields follow correct format. Confirmation can be verified through both UI and database:
+
 ![](./images/testing_img/Pasted%20image%2020250525183048.png)
 
-```
-SELECT * FROM courses WHERE course_name = 'Test_Adding_Course';
+```sql
+mysql> SELECT * FROM courses WHERE course_name = 'Test_Adding_course';
++-----+--------------------+---------------+---------------+----------+----------+-----------+--------------+
+| id  | course_name        | department_id | instructor_id | location | schedule | semester  | availability |
++-----+--------------------+---------------+---------------+----------+----------+-----------+--------------+
+| 201 | Test_Adding_Course |             1 |             2 | C405     | M        | Fall 2025 |          100 |
++-----+--------------------+---------------+---------------+----------+----------+-----------+--------------+
+1 row in set (0.00 sec)
 ```
 
-### Delete Course
+##### Delete Course
 
 ![](./images/testing_img/Pasted%20image%2020250525183746.png)
 ![](./images/testing_img/Pasted%20image%2020250525183825.png)
 
----
+Record removal is confirmed through the following result:
 
-## Manage Student Enrollments
+![](./images/testing_img/Pasted%20image%2020250525183825.png)
 
-### Add Student to Course
+```sql
+mysql> SELECT * FROM courses WHERE course_name = 'Test_Adding_course';
+Empty set (0.00 sec)
+```
+
+##### Add Students to Course
+
+Students can be assigned or removed from a course by selecting the course from the list:
 
 ![](./images/testing_img/Pasted%20image%2020250525184445.png)
 ![](./images/testing_img/Pasted%20image%2020250525184339.png)
 ![](./images/testing_img/Pasted%20image%2020250525184536.png)
 
-```
+```sql
 SELECT u.id AS student_id, u.username, u.email, d.department_name
 FROM enrollments e
 JOIN users u ON e.student_id = u.id
@@ -340,81 +364,107 @@ JOIN departments d ON u.department_id = d.id
 WHERE c.course_name = 'test_add_student_instructor';
 ```
 
-### Remove Student from Course
+##### Remove Students from Course
 
 ![](./images/testing_img/Pasted%20image%2020250525184824.png)
 ![](./images/testing_img/Pasted%20image%2020250525184837.png)
 
----
+```sql
+mysql> SELECT u.id AS student_id, u.username, u.email, d.department_name
+    -> FROM enrollments e
+    -> JOIN users u ON e.student_id = u.id
+    -> JOIN courses c ON e.course_id = c.id
+    -> JOIN departments d ON u.department_id = d.id
+    -> WHERE c.course_name = 'test_add_student_instructor';
+Empty set (0.02 sec)
+```
 
-## Manage Users
+#### Manage Users
 
-### Set Instructor Role
+##### Set Instructor Role
 
 ![](./images/testing_img/Pasted%20image%2020250525182116.png)
 ![](./images/testing_img/Pasted%20image%2020250525182141.png)
 ![](./images/testing_img/Pasted%20image%2020250525182229.png)
 
-### Set Student Role
+##### Set Student Role
 
 ![](./images/testing_img/Pasted%20image%2020250525182336.png)
 ![](./images/testing_img/Pasted%20image%2020250525182422.png)
 
----
+### Student Functions
 
-## Student Enrollment Workflow
+Students are able to view their current enrollments.
 
-### Enroll in Non-Full Course
+![](./images/testing_img/Pasted%20image%2020250525192319.png)
+
+#### Enroll in Courses
+
+##### Non-Full Course
 
 ![](./images/testing_img/Pasted%20image%2020250525190508.png)
 ![](./images/testing_img/Pasted%20image%2020250525190540.png)
 ![](./images/testing_img/Pasted%20image%2020250525191714.png)
 
-```
-SELECT e.*
-FROM enrollments e
-JOIN users u ON e.student_id = u.id
-JOIN courses c ON e.course_id = c.id
-WHERE u.username = 'test_enroll_student' AND c.course_name = 'DevOps';
+```sql
+mysql> SELECT e.*
+    -> FROM enrollments e
+    -> JOIN users u ON e.student_id = u.id
+    -> JOIN courses c ON e.course_id = c.id
+    -> WHERE u.username = 'test_enroll_student' AND c.course_name = 'DevOps';
++------+------------+-----------+
+| id   | student_id | course_id |
++------+------------+-----------+
+| 9499 |       3203 |         1 |
++------+------------+-----------+
+1 row in set (0.00 sec)
 ```
 
-### Attempt Enroll in Full Course
+##### Full Course
 
 ![](./images/testing_img/Pasted%20image%2020250525192248.png)
 
-### Unenroll from Course
+When the course has no remaining availability, the system blocks enrollment.
+
+#### Unenroll from Course
 
 ![](./images/testing_img/Pasted%20image%2020250525192100.png)
 ![](./images/testing_img/Pasted%20image%2020250525192111.png)
 
----
+```sql
+mysql> SELECT e.*
+    -> FROM enrollments e
+    -> JOIN users u ON e.student_id = u.id
+    -> JOIN courses c ON e.course_id = c.id
+    -> WHERE u.username = 'test_enroll_student' AND c.course_name = 'DevOps';
+Empty set (0.01 sec)
+```
 
-## Instructor Management Interface
+### Instructor View
 
-Instructors can add or remove students **only in the courses they are assigned to**.
+The interface is similar to the administrator but limited to courses assigned to the instructor.
 
 ![](./images/testing_img/Pasted%20image%2020250525190213.png)
 ![](./images/testing_img/Pasted%20image%2020250525190233.png)
 ![](./images/testing_img/Pasted%20image%2020250525190245.png)
 
----
-
-## Course Viewing & Filtering
+### Course View and Filtering
 
 ![](./images/testing_img/Pasted%20image%2020250525173642.png)
 ![](./images/testing_img/Pasted%20image%2020250525173707.png)
 
-### Filter by Name
+#### Filter by Name
 
 ![](./images/testing_img/Pasted%20image%2020250525173813.png)
 
-### Filter by Department
+#### Filter by Department
 
 ![](./images/testing_img/Pasted%20image%2020250525173858.png)
 
-### Filter by Schedule
+#### Filter by Schedule
 
 ![](./images/testing_img/Pasted%20image%2020250525173953.png)
+
 
 
 # Presentation & Material 
