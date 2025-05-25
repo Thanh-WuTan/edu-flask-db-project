@@ -86,5 +86,12 @@ docker-compose up -d
 - Once the containers are running, the web application is accessible at http://localhost:5000.
 - The MySQL database is available at localhost:3306 (use the credentials from .env).
 
+5. Loading sample data:
+```bash
+docker cp test.py edu-flask-db-project_web_1:/tmp/test.py
+Mac/Linux: docker exec -it edu-flask-db-project_web_1 python3 /tmp/test.py
+Windows: docker exec -it edu-flask-db-project_web_1 python /tmp/test.py
+```
+
 ## Supporting Documentation
 - Design Document: Full details in DesignDocument.pdf (included in repo).

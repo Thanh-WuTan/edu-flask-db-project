@@ -255,7 +255,7 @@ docker exec -it edu-flask-db-project_web_1 python3 /tmp/test.py  # For Mac/Linux
 docker exec -it edu-flask-db-project_web_1 python /tmp/test.py   # For Windows
 ```
 
-![](./images/Pasted%20image%2020250525172759.png)
+![](./images/testing_img/Pasted%20image%2020250525172759.png)
 
 ---
 
@@ -267,9 +267,9 @@ All newly registered accounts are initially assigned the `guest` role. Admin use
 
 Weak passwords are rejected to ensure security:
 
-![](./images/Pasted%20image%2020250525174300.png)
-![](./images/Pasted%20image%2020250525174329.png)
-![](./images/Pasted%20image%2020250525180724.png)
+![](./images/testing_img/Pasted%20image%2020250525174300.png)
+![](./images/testing_img/Pasted%20image%2020250525174329.png)
+![](./images/testing_img/Pasted%20image%2020250525180724.png)
 
 The following query confirms the encrypted password is securely stored:
 
@@ -286,21 +286,21 @@ WHERE u.email = 'test_register@gmail.com';
 
 ### Admin View
 
-![](./images/Pasted%20image%2020250525181647.png)
-![](./images/Pasted%20image%2020250525181704.png)
-![](./images/Pasted%20image%2020250525181718.png)
+![](./images/testing_img/Pasted%20image%2020250525181647.png)
+![](./images/testing_img/Pasted%20image%2020250525181704.png)
+![](./images/testing_img/Pasted%20image%2020250525181718.png)
 
 ### Student View
 
-![](./images/Pasted%20image%2020250525182459.png)
+![](./images/testing_img/Pasted%20image%2020250525182459.png)
 
 ### Instructor View
 
-![](./images/Pasted%20image%2020250525182700.png)
+![](./images/testing_img/Pasted%20image%2020250525182700.png)
 
 ### Guest View
 
-![](./images/Pasted%20image%2020250525180755.png)
+![](./images/testing_img/Pasted%20image%2020250525180755.png)
 
 ---
 
@@ -308,9 +308,9 @@ WHERE u.email = 'test_register@gmail.com';
 
 ### Add Course
 
-![](./images/Pasted%20image%2020250525182916.png)
-![](./images/Pasted%20image%2020250525182929.png)
-![](./images/Pasted%20image%2020250525183048.png)
+![](./images/testing_img/Pasted%20image%2020250525182916.png)
+![](./images/testing_img/Pasted%20image%2020250525182929.png)
+![](./images/testing_img/Pasted%20image%2020250525183048.png)
 
 ```
 SELECT * FROM courses WHERE course_name = 'Test_Adding_Course';
@@ -318,8 +318,8 @@ SELECT * FROM courses WHERE course_name = 'Test_Adding_Course';
 
 ### Delete Course
 
-![](./images/Pasted%20image%2020250525183746.png)
-![](./images/Pasted%20image%2020250525183825.png)
+![](./images/testing_img/Pasted%20image%2020250525183746.png)
+![](./images/testing_img/Pasted%20image%2020250525183825.png)
 
 ---
 
@@ -327,9 +327,9 @@ SELECT * FROM courses WHERE course_name = 'Test_Adding_Course';
 
 ### Add Student to Course
 
-![](./images/Pasted%20image%2020250525184445.png)
-![](./images/Pasted%20image%2020250525184339.png)
-![](./images/Pasted%20image%2020250525184536.png)
+![](./images/testing_img/Pasted%20image%2020250525184445.png)
+![](./images/testing_img/Pasted%20image%2020250525184339.png)
+![](./images/testing_img/Pasted%20image%2020250525184536.png)
 
 ```
 SELECT u.id AS student_id, u.username, u.email, d.department_name
@@ -342,8 +342,8 @@ WHERE c.course_name = 'test_add_student_instructor';
 
 ### Remove Student from Course
 
-![](./images/Pasted%20image%2020250525184824.png)
-![](./images/Pasted%20image%2020250525184837.png)
+![](./images/testing_img/Pasted%20image%2020250525184824.png)
+![](./images/testing_img/Pasted%20image%2020250525184837.png)
 
 ---
 
@@ -351,14 +351,14 @@ WHERE c.course_name = 'test_add_student_instructor';
 
 ### Set Instructor Role
 
-![](./images/Pasted%20image%2020250525182116.png)
-![](./images/Pasted%20image%2020250525182141.png)
-![](./images/Pasted%20image%2020250525182229.png)
+![](./images/testing_img/Pasted%20image%2020250525182116.png)
+![](./images/testing_img/Pasted%20image%2020250525182141.png)
+![](./images/testing_img/Pasted%20image%2020250525182229.png)
 
 ### Set Student Role
 
-![](./images/Pasted%20image%2020250525182336.png)
-![](./images/Pasted%20image%2020250525182422.png)
+![](./images/testing_img/Pasted%20image%2020250525182336.png)
+![](./images/testing_img/Pasted%20image%2020250525182422.png)
 
 ---
 
@@ -366,9 +366,9 @@ WHERE c.course_name = 'test_add_student_instructor';
 
 ### Enroll in Non-Full Course
 
-![](./images/Pasted%20image%2020250525190508.png)
-![](./images/Pasted%20image%2020250525190540.png)
-![](./images/Pasted%20image%2020250525191714.png)
+![](./images/testing_img/Pasted%20image%2020250525190508.png)
+![](./images/testing_img/Pasted%20image%2020250525190540.png)
+![](./images/testing_img/Pasted%20image%2020250525191714.png)
 
 ```
 SELECT e.*
@@ -380,12 +380,12 @@ WHERE u.username = 'test_enroll_student' AND c.course_name = 'DevOps';
 
 ### Attempt Enroll in Full Course
 
-![](./images/Pasted%20image%2020250525192248.png)
+![](./images/testing_img/Pasted%20image%2020250525192248.png)
 
 ### Unenroll from Course
 
-![](./images/Pasted%20image%2020250525192100.png)
-![](./images/Pasted%20image%2020250525192111.png)
+![](./images/testing_img/Pasted%20image%2020250525192100.png)
+![](./images/testing_img/Pasted%20image%2020250525192111.png)
 
 ---
 
@@ -393,28 +393,29 @@ WHERE u.username = 'test_enroll_student' AND c.course_name = 'DevOps';
 
 Instructors can add or remove students **only in the courses they are assigned to**.
 
-![](./images/Pasted%20image%2020250525190213.png)
-![](./images/Pasted%20image%2020250525190233.png)
-![](./images/Pasted%20image%2020250525190245.png)
+![](./images/testing_img/Pasted%20image%2020250525190213.png)
+![](./images/testing_img/Pasted%20image%2020250525190233.png)
+![](./images/testing_img/Pasted%20image%2020250525190245.png)
 
 ---
 
 ## Course Viewing & Filtering
 
-![](./images/Pasted%20image%2020250525173642.png)
-![](./images/Pasted%20image%2020250525173707.png)
+![](./images/testing_img/Pasted%20image%2020250525173642.png)
+![](./images/testing_img/Pasted%20image%2020250525173707.png)
 
 ### Filter by Name
 
-![](./images/Pasted%20image%2020250525173813.png)
+![](./images/testing_img/Pasted%20image%2020250525173813.png)
 
 ### Filter by Department
 
-![](./images/Pasted%20image%2020250525173858.png)
+![](./images/testing_img/Pasted%20image%2020250525173858.png)
 
 ### Filter by Schedule
 
-![](./images/Pasted%20image%2020250525173953.png)
+![](./images/testing_img/Pasted%20image%2020250525173953.png)
+
 
 # Presentation & Material 
 
